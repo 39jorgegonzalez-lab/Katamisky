@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>KATAMISKY — Retro & Classic Finds</title>
+  <meta name="description" content="Curated retro and classic finds — from timeless home decor and fashion to nostalgic toys and collectibles. Vintage vibes with modern flair." />
+  <meta name="theme-color" content="#f5efe6" />
+  <meta property="og:title" content="KATAMISKY — Retro & Classic Finds" />
+  <meta property="og:description" content="Timeless retro items and vintage classics — decor, fashion, collectibles, and more." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://katamisky.com/og-image.jpg" />
+  <meta property="og:url" content="https://katamisky.com" />
+  <link rel="canonical" href="https://katamisky.com/">
+  <link rel="icon" href="/favicon.ico" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #f8f5f1;
+      --ink: #2a2a2a;
+      --accent: #c49a6c;
+      --border: #e0d8c3;
+      --radius: 16px;
+      --shadow: 0 8px 18px rgba(0,0,0,.05);
+      --maxw: 1200px;
+      --title: #7a5a35;
+    }
+
+    body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+    header { position: sticky; top: 0; background: #fffefb; border-bottom: 1px solid var(--border); box-shadow: 0 4px 10px rgba(0,0,0,.04); z-index: 50; }
+    .container { width: min(100% - 2rem, var(--maxw)); margin-inline: auto; }
+    .nav { display: flex; align-items: center; gap: 1rem; padding: 1rem 0; }
+    .nav-spacer { flex: 1; }
+    .brand { display: flex; align-items: center; gap: .6rem; text-decoration: none; color: inherit; }
+    .brand-logo { width: 36px; height: 36px; border-radius: 50%; background: radial-gradient(circle, #d8b47c, #b0895e); box-shadow: 0 3px 8px rgba(0,0,0,.15); }
+    .brand h1 { font-family: 'Playfair Display', serif; font-size: 1.5rem; margin: 0; }
+    .nav a.link { text-decoration: none; font-weight: 600; color: #6b553f; padding: .45rem .75rem; border-radius: 10px; border: 1px solid transparent; }
+    .nav a.link:hover { border-color: var(--border); background: #fffaf2; }
+
+    main { padding: 2rem 0; }
+
+    .top-signs {
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      min-height: clamp(220px, 24vw, 340px);
+      padding: clamp(14px, 2.5vw, 24px);
+      background-image:
+        radial-gradient(120% 80% at 50% -10%, rgba(0,0,0,0.08), transparent 55%),
+        radial-gradient(140% 100% at 50% 110%, rgba(0,0,0,0.06), transparent 50%),
+        linear-gradient(180deg, rgba(248,245,241,0.40) 0%, rgba(248,245,241,0.15) 40%, rgba(248,245,241,0.55) 100%),
+        repeating-linear-gradient(45deg, rgba(210,170,120,.55) 0 12px, rgba(210,170,120,0) 12px 48px),
+        repeating-linear-gradient(-45deg, rgba(210,170,120,.55) 0 12px, rgba(210,170,120,0) 12px 48px),
+        radial-gradient(120% 120% at 50% 20%, #557a3d 0%, #3c5f2f 60%, #2e4724 100%);
+      background-size: cover, cover, cover, auto, auto, cover;
+      background-position: center, center, center, center, center, center 40%;
+      background-repeat: no-repeat, no-repeat, no-repeat, repeat, repeat, no-repeat;
+    }
+
+    .hero {
+      text-align: center;
+      padding: clamp(16px, 3vw, 28px) 1rem 0;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .hero h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3rem, 7.5vw, 5.25rem);
+      line-height: 1.05;
+      color: var(--title);
+      margin: 0;
+      text-shadow: 0 1px 0 rgba(255,255,255,0.25), 0 2px 8px rgba(0,0,0,.35);
+    }
+    .hero p {
+      font-size: clamp(1.05rem, 2.2vw, 1.25rem);
+      margin-top: clamp(1.1rem, 2.6vw, 1.7rem);
+      opacity: .9;
+    }
+
+    .filters {
+      display: flex; justify-content: center; flex-wrap: wrap; gap: .6rem;
+      padding: clamp(10px, 2vw, 16px) 1rem clamp(16px, 2.5vw, 20px);
+      margin: clamp(10px, 2.8vw, 28px) auto 0;
+      max-width: 1000px;
+    }
+    .filter-btn { border: 2px solid var(--border); background: rgba(255,255,255,0.92); border-radius: 999px; padding: .5rem 1rem; cursor: pointer; font-weight: 600; transition: all .2s ease; }
+    .filter-btn:hover, .filter-btn.active { border-color: var(--accent); color: var(--accent); }
+    .filter-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+    .grid { display: grid; gap: 1.25rem; grid-template-columns: repeat(4, 1fr); padding-bottom: 3rem; margin-top: 1.25rem; }
+    @media (max-width: 1024px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 768px)  { .grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 480px)  { .grid { grid-template-columns: 1fr; } }
+
+    .card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); display: flex; flex-direction: column; overflow: hidden; transition: transform .2s ease; }
+    .card:hover { transform: translateY(-2px); }
+    .card img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
+    .card-body { padding: 1rem; display: grid; gap: .4rem; }
+    .card-category { font-size: .8rem; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+    .card-title { font-family: 'Playfair Display', serif; font-size: 1.2rem; margin: 0; }
+    .card-desc { font-size: .95rem; opacity: .85; }
+    .card a.btn { margin-top: auto; text-decoration: none; background: var(--accent); color: white; font-weight: 700; border-radius: 10px; text-align: center; padding: .6rem 1rem; transition: background .2s ease; }
+    .card a.btn:hover { background: #b08455; }
+
+    footer { border-top: 1px solid var(--border); background: #fffaf2; text-align: center; padding: 1.5rem 0 2rem; color: #5b4b3a; font-size: .9rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <a href="index.html" class="brand"><span class="brand-logo" aria-hidden="true"></span><h1>KATAMISKY</h1></a>
+      <div class="nav-spacer"></div>
+      <a class="link" href="about.html">About</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="top-signs">
+      <div class="hero">
+        <h2>Retro &amp; Classic Finds</h2>
+        <p>Curated treasures from past eras — decor, fashion, collectibles &amp; more.</p>
+      </div>
+
+      <div class="filters">
+        <button class="filter-btn active" data-filter="featured" type="button" aria-pressed="true">Featured</button>
+        <button class="filter-btn" data-filter="Decor" type="button" aria-pressed="false">Home Decor</button>
+        <button class="filter-btn" data-filter="Fashion" type="button" aria-pressed="false">Fashion</button>
+        <button class="filter-btn" data-filter="Collectibles" type="button" aria-pressed="false">Collectibles</button>
+        <button class="filter-btn" data-filter="Toys" type="button" aria-pressed="false">Toys</button>
+      </div>
+    </section>
+
+    <section class="grid">
+      <!-- EXACTLY 12 Featured Cards (links normalized with tag) -->
+      <article class="card" data-category="Decor" data-featured="true">
+        <img decoding="async" src="https://m.media-amazon.com/images/I/91M07COBazL._AC_SX679_.jpg" alt="Vintage brass table lamp — Seven Chakra Tree Positive Energy decor">
+        <div class="card-body">
+          <span class="card-category">Home Decor</span>
+          <h3 class="card-title">Vintage Brass Table Lamp</h3>
+          <p class="card-desc">Elegant mid-century brass piece that adds timeless charm to any reading nook or office.</p>
+          <a class="btn" href="https://www.amazon.com/dp/B07BNJ76LM?tag=katamisky-20" target="_blank" rel="nofollow sponsored noopener">View Item →</a>
+        </div>
+      </article>
+
+      <article class="card" data-category="Fashion" data-featured="true">
+        <img decoding="async" src="https://m.media-amazon.com/images/I/8121RHIM+dL._AC_SX679_.jpg" alt="Star Wars Tatooine graphic tee in vintage charcoal">
+        <div class="card-body">
+          <span class="card-category">Fashion</span>
+          <h3 class="card-title">Star Wars “Tatooine” Tee</h3>
+          <p class="card-desc">Soft vintage-wash graphic tee featuring classic twin-suns artwork — relaxed retro fit.</p>
+        <a class="btn" href="https://www.amazon.com/dp/B07Q64KR8T?tag=katamisky-20" target="_blank" rel="nofollow sponsored noopener">View Item →</a>
+        </div>
+      </article>
+
+      <article class="card" data-category="Collectibles" data-featured="true">
+        <img loading="lazy" decoding="async" src="https://m.media-amazon.com/images/I/81s5nalWBPL._AC_SX466_.jpg" alt="CiaraQ Polyhedral Dice Set — retro RPG dice with pouches, 35-piece collectible set">
+        <div class="card-body">
+          <span class="card-category">Collectibles</span>
+          <h3 class="card-title">CiaraQ Retro Polyhedral Dice Set</h3>
+          <p class="card-desc">A complete 35-piece polyhedral dice collection with vintage-inspired pouches — perfect for tabletop RPG fans, D&amp;D players, and retro game collectors.</p>
+          <a class="btn" href="https://www.amazon.com/dp/B0BZL5LZ57?tag=katamisky-20" target="_blank" rel="nofollow sponsored noopener">View Item →</a>
+        </div>
+      </article>
+
+      <article class="card" data-category="Toys" data-featured="true">
+        <img loading="lazy" decoding="async" src="https://m.media-amazon.com/images/I/711ToRjPlOL._AC_SX466_.jpg" alt="Classic Operation Skill Game — retro board game for kids and families">
+        <div class="card-body">
+          <span class="card-category">Toys</span>
+          <h3 class="card-title">Classic Operation Game</h3>
+          <p class="card-desc">The timeless buzzer-beating game of skill and laughter. Test your steady hand, remove the ailments, and relive pure retro fun from childhood!</p>
+          <a class="btn" href="https://www.amazon.com/dp/B00000DMFM?tag=katamisky-20" target="_blank" rel="nofollow sponsored noopener">View Item →</a>
+        </div>
+      </article>
+
+      <article class="card" data-category="Decor" data-featured="true">
+        <img loading="lazy" decoding="async" src="https://m.media-amazon.com/images/I/61vEjplUwlL._AC_SX679_.jpg" alt="HoMedics tabletop indoor water fountain with river rocks">
+        <div class="card-body">
+          <span class="card-category">Home Decor</span>
+          <h3 class="card-title">HoMedics Tabletop Water Fountain</h3>
+          <p class="card-desc">Compact indoor fountain with soothing water sounds — includes river rocks &amp; AC adapter.</p>
+          <a class="btn" href="https://www.amazon.com/dp/B000QTUJXS?tag=katamisky-20" target="_blank" rel="nofollow sponsored noopener">View Item →</a>
+        </div>
+      </article>
+
+      <article class="card" data-category="Fashion" data-featured="true">
+        <img loading="lazy" decoding="async" src="https://m.media-amazon.com/images/I/51L+fMj6vGL._AC_SX679_.jpg" alt="Never Forget Funny Retro Novelty T-shirt with floppy disk design">
+        <div class="card-body">
+          <span class="card-category">Fashion</span>
+          <h3 class="card-title">Never Forget Retro Tee</h3>
+          <p class="card-desc">Classic “Never Forget” shirt featuring a nostalgic floppy-disk print — the perfect mix of humor and vintage flair.</p>
+          <a class="btn" href="https://www.amazon.com/dp/B00NMFDS9A?tag=katamisky-20" target="_blank" rel="nofollow sponsored noopener">View Item →</a>
+        </div>
+      </article>
+
+      <article class="card" data-category="Collectibles" data-featured="true">
+        <img loading="lazy" decoding="async" src="https://m.media-amazon.com/images/I/71cb2RCy+aL._AC_SX679_.jpg" alt="Gskyer AZ Astronomical Refracting Telescope — retro-style stargazing collectible and educational tool">
+        <div class="card-body">
+          <span class="card-category">Collectibles</span>
+          <h3 class="card-title">Gskyer Astronomical Telescope</h3>
+          <p class="card-desc">A vintage-inspired refracting telescope that brings the night sky closer. Perfect for collectors, dreamers, and anyone who loves classic science gear with modern precision.</p>
+          <a class="btn" href="https://www.amazon.com/dp/B081RJ8DW1?tag=katamisky-20" target="_blank" rel="nofollow sponsored noopener">View Item →</a>
+        </div>
+      </article>
+
+      <article class="card" data-category="Toys" data-featured="true">
+        <img loading="lazy" decoding="async" src="https://m.media-amazon.com/images/I/71hPE6FpfnL._AC_SX466_.jpg" alt="Taco Cat Goat Cheese Pizza — hilarious retro card game for families and kids">
+        <div class="card-body">
+          <span class="card-category">Toys</span>
+          <h3 class="card-title">Taco Cat Goat Cheese Pizza</h3>
+          <p class="card-desc">Fast-paced and laugh-out-loud fun — this quirky card game is easy to learn, perfect for parties, and full of retro-style humor for all ages.</p>
+          <a class="btn" href="https://www.amazon.com/dp/B07JZTBV9C?tag=katamisky-20" target="_blank" rel="nofollow sponsored noopener">View Item →</a>
+        </div>
+      </article>
+
+      <article class="card" data-category="Decor" data-featured="true">
+        <img loading="lazy" decoding="async" src="https://m.media-amazon.com/images/I/71daPlWonJL._AC_SX679_.jpg" alt="Rechargeable silicone cat night light with tap control">
+        <div class="card-body">
+          <span class="card-category">Home Decor</span>
+          <h3 class="card-title">Rechargeable Silicone Night Light</h3>
+          <p class="card-desc">Soft-touch LED night light with tap controls &amp; color modes — cute retro accent for bedside or shelves.</p>
+          <a class="btn" href="https://www.amazon.com/dp/B073VZ38RT?tag=katamisky-20" target="_blank" rel="nofollow sponsored noopener">View Item →</a>
+        </div>
+      </article>
+
+      <article class="card" data-category="Fashion" data-featured="true">
+        <img loading="lazy" decoding="async" src="https://m.media-amazon.com/images/I/71jim7+76oL._AC_SX569_.jpg" alt="Miusey Geometrical Retro Top — comfortable stretch relaxed blouse with vintage pattern">
+        <div class="card-body">
+          <span class="card-category">Fashion</span>
+          <h3 class="card-title">Miusey Geometrical Retro Top</h3>
+          <p class="card-desc">Soft, stretchable retro blouse featuring geometric patterns and a relaxed fit — a perfect mix of comfort and vintage flair.</p>
+          <a class="btn" href="https://www.amazon.com/dp/B07H5LDZ2L?tag=katamisky-20" target="_blank" rel="nofollow sponsored noopener">View Item →</a>
+        </div>
+      </article>
+
+      <article class="card" data-category="Collectibles" data-featured="true">
+        <img loading="lazy" decoding="async" src="https://m.media-amazon.com/images/I/8124sx5zL2L._AC_SX466_.jpg" alt="Monopoly Friends Edition board game — Amazon Exclusive retro collectible">
+        <div class="card-body">
+          <span class="card-category">Collectibles</span>
+          <h3 class="card-title">Monopoly: Friends Edition</h3>
+          <p class="card-desc">A nostalgic twist on the classic Monopoly game inspired by the hit TV show <em>Friends</em>. A must-have for fans and collectors.</p>
+          <a class="btn" href="https://www.amazon.com/dp/B07VVLQ5LS?tag=katamisky-20" target="_blank" rel="nofollow sponsored noopener">View Item →</a>
+        </div>
+      </article>
+
+      <article class="card" data-category="Toys" data-featured="true">
+        <img loading="lazy" decoding="async" src="https://m.media-amazon.com/images/I/71ZnGyItfoL._AC_SX466_.jpg" alt="Hasbro Gaming Kingdom Adventures Exclusive — retro board game collectible">
+        <div class="card-body">
+          <span class="card-category">Toys</span>
+          <h3 class="card-title">Hasbro Kingdom Adventures</h3>
+          <p class="card-desc">A beloved Hasbro classic that blends strategy, luck, and imagination. Vintage board-game charm for collectors and nostalgic family nights.</p>
+          <a class="btn" href="https://www.amazon.com/dp/B00000DMF5?tag=katamisky-20" target="_blank" rel="nofollow sponsored noopener">View Item →</a>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer>
+    <p>© <span id="year"></span> KATAMISKY — Curators of the Retro & Classic. · 
+      <a class="link" href="about.html">About</a></p>
+    <p style="margin-top:.5rem; opacity:.85;">As an Amazon Associate I earn from qualifying purchases.</p>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    const buttons = document.querySelectorAll('.filter-btn');
+    const cards = document.querySelectorAll('.card');
+
+    function filterCards(filter) {
+      cards.forEach(card => {
+        const featured = card.dataset.featured === 'true';
+        const match = (filter === 'featured') ? featured : (card.dataset.category === filter);
+        card.hidden = !match;
+      });
+    }
+
+    buttons.forEach(btn => btn.addEventListener('click', () => {
+      buttons.forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-pressed', 'false');
+      });
+      btn.classList.add('active');
+      btn.setAttribute('aria-pressed', 'true');
+      filterCards(btn.dataset.filter);
+    }));
+
+    filterCards('featured');
+  </script>
+
+  <script>
+  (() => {
+    const AFF_TAG = "katamisky-20";
+    const AMAZON_HOST_RE = /(^|\.)amazon\./i;
+    const AMAZON_IMAGE_CDN_RE = /^m\.media\.amazon\./i;
+    const ASIN_RE = /^[A-Z0-9]{10}$/i;
+
+    function extractASINFromPath(path) {
+      const patterns = [
+        /\/dp\/([A-Z0-9]{10})(?:[\/?]|$)/i,
+        /\/gp\/product\/([A-Z0-9]{10})(?:[\/?]|$)/i,
+        /\/gp\/aw\/d\/([A-Z0-9]{10})(?:[\/?]|$)/i,
+        /\/gp\/offer-listing\/([A-Z0-9]{10})(?:[\/?]|$)/i,
+        /\/exec\/obidos\/ASIN\/([A-Z0-9]{10})(?:[\/?]|$)/i
+      ];
+      for (const rx of patterns) {
+        const m = path.match(rx);
+        if (m) return m[1].toUpperCase();
+      }
+      const seg = path.split("/").find(s => ASIN_RE.test(s));
+      return seg ? seg.toUpperCase() : null;
+    }
+
+    function canonicalize(url) {
+      let asin = extractASINFromPath(url.pathname)
+              || url.searchParams.get("ASIN")
+              || url.searchParams.get("asin")
+              || url.searchParams.get("creativeASIN");
+      if (!asin || !ASIN_RE.test(asin)) return null;
+      asin = asin.toUpperCase();
+      const canonical = new URL(url.origin + "/dp/" + asin);
+      canonical.searchParams.set("tag", AFF_TAG);
+      return canonical;
+    }
+
+    document.querySelectorAll('a[href^="http"]').forEach(a => {
+      try {
+        const url = new URL(a.href);
+        const host = url.hostname;
+        if (!AMAZON_HOST_RE.test(host) || AMAZON_IMAGE_CDN_RE.test(host)) return;
+
+        const canon = canonicalize(url);
+        if (!canon) return;
+
+        a.href = canon.toString();
+
+        const rel = new Set((a.rel || "").split(/\s+/).filter(Boolean));
+        ["nofollow","sponsored","noopener"].forEach(v => rel.add(v));
+        a.rel = Array.from(rel).join(" ");
+      } catch {}
+    });
+  })();
+  </script>
+</body>
+</html>
