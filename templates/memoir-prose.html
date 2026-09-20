@@ -1,0 +1,56 @@
+<!-- COPY THIS FILE into content/ with an author-approved meaningful filename.
+     Replace every bracketed field, remove unused components, then set
+     authorApproved: true only after the author has approved the actual prose.
+     Keep status: draft after approval until the separate publication decision.
+     This editor source is not a published installment. -->
+
+<!-- MEMOIR TEXT: author-supplied autobiographical text only -->
+<p>[AUTHOR-SUPPLIED MEMOIR TEXT]</p>
+
+<!-- OPTIONAL DIALOGUE: ordinary paragraphs; no novelty fonts -->
+<p class="story-dialogue">[AUTHOR-SUPPLIED DIALOGUE]</p>
+
+<!-- OPTIONAL INNER THOUGHT -->
+<p class="inner-thought">[AUTHOR-SUPPLIED INNER THOUGHT]</p>
+
+<!-- OPTIONAL EMPHASIZED SPEECH -->
+<p class="story-emphasis">[AUTHOR-SUPPLIED EMPHATIC SPEECH]</p>
+
+<!-- OPTIONAL ENVIRONMENTAL TEXT / SIGN -->
+<div class="environmental-text">[AUTHOR-SUPPLIED SIGN TEXT]</div>
+
+<!-- IMAGE METADATA: type/authenticity on figure; visible label + caption + alt.
+     Optional artifact-meta text: Source / Date / Credit. Omit unknown fields. -->
+
+<!-- OPTIONAL NARRATIVE ILLUSTRATION: use actual optimized asset dimensions.
+     Remove this component unless an approved image and description exist. -->
+<figure class="illustration illustration--narrative" data-type="narrative" data-authenticity="reconstruction">
+  <img src="[APPROVED IMAGE PATH]" alt="[CONCISE AUTHOR-APPROVED DESCRIPTION]" width="[ACTUAL WIDTH]" height="[ACTUAL HEIGHT]" loading="lazy" decoding="async">
+  <figcaption><span class="editorial-label">Illustrated reconstruction based on Henry’s recollection.</span><p class="literary-caption">[OPTIONAL AUTHOR-SUPPLIED CAPTION]</p></figcaption>
+</figure>
+
+<!-- OPTIONAL MEMORY VIGNETTE: smaller detail; no forced image on every page -->
+<figure class="illustration illustration--vignette" data-type="vignette" data-authenticity="reconstruction">
+  <img src="[APPROVED VIGNETTE PATH]" alt="[CONCISE DESCRIPTION]" width="[ACTUAL WIDTH]" height="[ACTUAL HEIGHT]" loading="lazy" decoding="async">
+  <figcaption>Illustrated reconstruction based on Henry’s recollection.</figcaption>
+</figure>
+
+<!-- OPTIONAL DOCUMENT / TRANSCRIPTION: set document: true in metadata -->
+<figure class="document" data-type="transcription" data-authenticity="transcription">
+  <figcaption><span class="editorial-label">Transcription</span> [ACTUAL SOURCE, IF KNOWN]</figcaption>
+  <pre class="document-text">[AUTHOR-SUPPLIED TRANSCRIPTION]</pre>
+</figure>
+
+<!-- OPTIONAL AUTHENTIC ARCHIVAL ARTIFACT: never use this label for generated art.
+     For reconstructed documents label “Recreated document based on Henry’s recollection.”
+     Unknown dates stay unknown; omit unprovided metadata rather than inventing it. -->
+<figure class="artifact" data-type="artifact" data-authenticity="authentic">
+  <img src="[AUTHENTIC ARTIFACT PATH]" alt="[ACCURATE DESCRIPTION]" width="[ACTUAL WIDTH]" height="[ACTUAL HEIGHT]" loading="lazy" decoding="async">
+  <figcaption><span class="editorial-label">Archival material</span><p class="literary-caption">[AUTHOR-APPROVED ARTIFACT CAPTION]</p><p class="artifact-meta">Source: [KNOWN SOURCE] · Date: [KNOWN DATE] · Credit: [KNOWN CREDIT]</p></figcaption>
+</figure>
+<!-- ACTUAL HANDWRITING: add an accessible plain-text transcription immediately below. -->
+
+<!-- OPTIONAL EDITORIAL NOTE: choose only the applicable label:
+     Personal recollection / Archival material / Documented material /
+     Secondhand information / Memory uncertain / Illustrated reconstruction / Transcription -->
+<aside class="editorial-note"><span class="editorial-label">[APPLICABLE LABEL]</span> [AUTHOR-APPROVED NOTE]</aside>

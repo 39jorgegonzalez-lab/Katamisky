@@ -1,0 +1,13 @@
+{
+  "id": "REPLACE-WITH-PERMANENT-SLUG",
+  "chapter": "chapter-01",
+  "title": "REPLACE WITH AUTHOR-APPROVED TITLE",
+  "description": "REPLACE WITH AUTHOR-APPROVED DESCRIPTION",
+  "date": null,
+  "pageNumber": null,
+  "status": "draft",
+  "authorApproved": false,
+  "source": "REPLACE-WITH-PROSE-FILENAME.html",
+  "document": false,
+  "objects": []
+}

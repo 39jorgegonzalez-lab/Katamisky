@@ -1,0 +1,33 @@
+<!-- EDITOR TEMPLATE — excluded from the public GitHub Pages build.
+     The publisher fills the {{FIELDS}} below from author-approved metadata.
+     Copy the prose starter as explained in STORY-PUBLISHING.md. -->
+<main id="main" tabindex="-1" class="container reader-container">
+  <div class="reading-progress" role="progressbar" aria-label="Current installment reading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" hidden><span></span></div>
+  <article class="story-installment reader-shell">
+    <header class="story-header reader-header">
+      <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/story/">Story</a><span aria-hidden="true">/</span><a href="{{CHAPTER_URL}}">Chapter {{CHAPTER_NUMBER}}</a></nav>
+      <!-- CHAPTER NUMBER / CHAPTER TITLE: author-approved metadata only -->
+      <p class="eyebrow">Chapter {{CHAPTER_NUMBER}} · Installment {{INSTALLMENT_NUMBER}}</p>
+      <p class="chapter-title">{{CHAPTER_TITLE}}</p>
+      <!-- STORY TITLE: replace through author-approved installment metadata -->
+      <h1>{{TITLE}}</h1>
+      <!-- PUBLICATION DATE / OPTIONAL VISIBLE BOOK PAGE NUMBER -->
+      <p class="metadata"><time datetime="{{DATE}}">{{DATE_LABEL}}</time>{{PAGE_NUMBER}}</p>
+      <p class="reading-status" hidden></p>
+    </header>
+    <div class="story-body">
+      <!-- MEMOIR TEXT: insert only author-supplied autobiographical text -->
+      {{MEMOIR_TEXT}}
+    </div>
+    <footer class="story-navigation reader-end">
+      {{END_STATE}}
+      <!-- PREVIOUS / NEXT NAVIGATION: generated from publication order -->
+      <nav class="installment-nav" aria-label="Installment">{{PREVIOUS}}<a href="{{CHAPTER_URL}}">Chapter Index</a>{{NEXT}}</nav>
+      <!-- OPTIONAL OBJECTS FROM THIS MEMORY: absent unless metadata supplied -->
+      {{OBJECTS}}
+      <!-- LATEST-PAGE EMAIL MODULE: omitted until a real service is approved -->
+      {{EMAIL_MODULE}}
+      <p class="small reader-archive-link"><a href="/archive/">Explore the archive →</a></p>
+    </footer>
+  </article>
+</main>

@@ -1,0 +1,8 @@
+__pycache__/
+node_modules/
+.qa/
+private-reference/
+*.log
+_site/
+.jekyll-cache/
+.sass-cache/

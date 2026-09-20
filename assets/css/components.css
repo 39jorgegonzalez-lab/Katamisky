@@ -1,0 +1,22 @@
+.illustration {margin:2.5rem 0}
+.illustration--vignette {max-width:450px;margin-inline:auto}
+figcaption {font-family:var(--font-ui);font-size:.75rem;line-height:1.65;color:var(--book-muted);margin-top:.75rem}
+.document {margin:2rem 0;border:1px solid var(--soft-border);background:var(--white);padding:1.2rem}
+.document figcaption {margin:0 0 1rem}
+.document-text {font-family:var(--font-document);font-size:.85rem;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere;margin:0}
+.artifact {border:1px solid var(--soft-border);padding:1rem;background:var(--white)}
+.artifact-meta {font-family:var(--font-ui);font-size:.8rem}
+.editorial-label,.editorial-samples li {font-family:var(--font-ui);font-size:.75rem;line-height:1.6;color:var(--book-muted);border:1px solid var(--paper-edge);padding:.35rem .6rem}
+.editorial-samples {display:flex;flex-wrap:wrap;gap:.5rem;padding:0;list-style:none;margin:1.5rem 0}
+.newsletter,.objects {margin-top:2.5rem;padding-top:1.75rem;border-top:1px solid var(--paper-edge);font-family:var(--font-ui);font-size:.85rem}
+.newsletter h2,.objects h2 {font-size:1.65rem;margin-top:0}
+.newsletter fieldset {border:0;padding:0;margin:1rem 0}
+.newsletter label {display:block;font-size:.8rem;margin-bottom:.5rem}
+.email-row {display:flex;gap:.5rem;flex-wrap:wrap}
+.email-row input {flex:1;min-width:0;width:100%;padding:.75rem;border:1px solid var(--book-muted);background:var(--paper-light);color:var(--book-muted);border-radius:2px}
+.email-row button {background:var(--soft-border);color:var(--book-ink);border:1px solid var(--book-muted);min-height:48px;padding:.7rem 1rem;border-radius:2px}
+.object-list {list-style:none;padding:0}
+.object-list a {display:inline-block;min-height:44px;padding:.5rem 0}
+
+.literary-caption {font-family:var(--font-reading);font-size:1rem;line-height:1.7}
+.editorial-note {font-family:var(--font-ui);font-size:.85rem;color:var(--book-muted)}

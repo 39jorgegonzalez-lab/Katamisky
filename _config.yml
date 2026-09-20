@@ -1,0 +1,21 @@
+# Retain GitHub Pages' existing root/main publishing path. Exclude editor sources.
+exclude:
+  - templates
+  - content
+  - scripts
+  - tests
+  - docs
+  - README.md
+  - AUTHOR-PUBLISHING-QUICKSTART.md
+  - STORY-PUBLISHING.md
+  - package.json
+  - package-lock.json
+  - node_modules
+  - private-reference
+  - .qa
+  - .sass-cache
+  - .jekyll-cache
+  - gemfiles
+  - Gemfile
+  - Gemfile.lock
+  - vendor

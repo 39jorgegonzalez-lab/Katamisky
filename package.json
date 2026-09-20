@@ -1,0 +1,14 @@
+{
+  "name": "katamisky-memoir",
+  "private": true,
+  "scripts": {
+    "build": "python3 scripts/build.py",
+    "test:static": "python3 tests/check_static.py",
+    "test:browser": "node tests/browser.cjs",
+    "test:publisher": "python3 tests/publisher.py"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1",
+    "axe-core": "4.10.3"
+  }
+}
