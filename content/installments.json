@@ -9,6 +9,7 @@
     "status": "published",
     "authorApproved": true,
     "source": "i-have-been-angry.html",
+    "pageBreaks": [18, 29, 46, 64],
     "document": false,
     "objects": []
   }

@@ -34,6 +34,13 @@ lives in `content/installments.json`; entries appear in reading order. The `id` 
 permanent slug: `/story/chapter-01/meaningful-slug/`. Optional `pageNumber` is a positive
 integer independent of that URL. Do not use page-number URLs.
 
+For paragraph-only installments, optional `pageBreaks` lists the paragraph numbers
+after which a book page ends (for example, `[18, 29, 46, 64]` creates five pages).
+These are display boundaries only: the builder preserves every paragraph's text
+and punctuation. Touch readers can swipe horizontally; numbered controls sit below
+the current page. The permanent installment URL stays the same, with optional
+`#page-2` fragments. Printing or disabling JavaScript exposes the complete text.
+
 ## Approval is separate from publication
 
 | status | authorApproved | Production build | Local approved-draft preview |

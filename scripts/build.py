@@ -23,7 +23,7 @@ def resume():
 
 def layout(title, description, url, body, active='', reader=False, document=False):
     styles = ['fonts', 'site', 'components'] + (['reader'] if reader else []) + (['document-font'] if document else [])
-    links = '\n'.join(f'<link rel="stylesheet" href="/assets/css/{s}.css{"?v=paper-grain-1" if s == "reader" else ""}">' for s in styles)
+    links = '\n'.join(f'<link rel="stylesheet" href="/assets/css/{s}.css{"?v=book-pages-1" if s == "reader" else ""}">' for s in styles)
     nav = ''.join(f'<a href="{href}"'+(' aria-current="page"' if label == active else '')+f'>{label}</a>' for label, href in [('Story','/story/'),('Chapters','/story/chapter-01/'),('Archive','/archive/'),('About','/about.html')])
     return f'''<!DOCTYPE html>
 <html lang="en"><head>
@@ -33,7 +33,7 @@ def layout(title, description, url, body, active='', reader=False, document=Fals
 <meta property="og:title" content="{e(title)} | KATAMISKY"><meta property="og:description" content="{e(description)}">
 <meta property="og:type" content="{'article' if reader else 'website'}"><meta property="og:url" content="{BASE}{e(url)}">
 <link rel="icon" type="image/svg+xml" href="/assets/images/site/favicon.svg">
-{links}<script type="module" src="/assets/js/continue-reading.js"></script>
+{links}<script type="module" src="/assets/js/continue-reading.js?v=book-pages-1"></script>
 </head><body>
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="site-header"><div class="container header-inner"><a class="brand" href="/" aria-label="KATAMISKY home">KATAMISKY</a><nav class="site-nav" aria-label="Main">{nav}</nav></div></header>
@@ -81,6 +81,24 @@ def read_json(path):
         return json.loads(path.read_text())
     except (OSError, json.JSONDecodeError) as error:
         raise ValueError(f"Cannot read {path.name}: {error}") from error
+
+
+def book_pages(prose, breaks):
+    """Wrap complete paragraphs in numbered pages without altering their markup."""
+    if breaks is None:
+        return prose
+    paragraphs = re.findall(r'<p(?:\s[^>]*)?>.*?</p>', prose, re.S)
+    remainder = re.sub(r'<p(?:\s[^>]*)?>.*?</p>', '', prose, flags=re.S)
+    if remainder.strip() or not paragraphs:
+        raise ValueError('pageBreaks requires paragraph-only prose; never split other content automatically')
+    if not isinstance(breaks, list) or any(type(n) is not int or n < 1 or n >= len(paragraphs) for n in breaks) or breaks != sorted(set(breaks)):
+        raise ValueError('pageBreaks must be unique increasing paragraph boundaries within the manuscript')
+    boundaries = [0, *breaks, len(paragraphs)]
+    pages = []
+    for index, (start, end) in enumerate(zip(boundaries, boundaries[1:]), 1):
+        label = f'Page {index} of {len(boundaries) - 1}'
+        pages.append(f'<div class="book-page" id="page-{index}" role="group" aria-label="{label}" tabindex="-1">\n' + '\n'.join(paragraphs[start:end]) + '\n</div>')
+    return '\n'.join(pages)
 
 
 def validate_metadata(root, chapters, entries):
@@ -197,7 +215,7 @@ def build(root, export=False, preview=False):
             raise ValueError('Memoir source must be semantic text/images, without embedded executable content')
         if 'document-text' in prose and not item.get('document'):
             raise ValueError('Document transcription requires document: true')
-        item['prose'] = prose
+        item['prose'] = book_pages(prose, item.get('pageBreaks'))
         item['url'] = f'/story/{item["chapter"]}/{item["id"]}/'
         if item['url'] in urls:
             raise ValueError('Duplicate permanent URL')

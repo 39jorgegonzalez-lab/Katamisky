@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="/assets/css/fonts.css">
 <link rel="stylesheet" href="/assets/css/site.css">
 <link rel="stylesheet" href="/assets/css/components.css">
-<link rel="stylesheet" href="/assets/css/reader.css?v=paper-grain-1"><script type="module" src="/assets/js/continue-reading.js"></script>
+<link rel="stylesheet" href="/assets/css/reader.css?v=book-pages-1"><script type="module" src="/assets/js/continue-reading.js?v=book-pages-1"></script>
 </head><body>
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="site-header"><div class="container header-inner"><a class="brand" href="/" aria-label="KATAMISKY home">KATAMISKY</a><nav class="site-nav" aria-label="Main"><a href="/story/">Story</a><a href="/story/chapter-01/">Chapters</a><a href="/archive/">Archive</a><a href="/about.html">About</a></nav></div></header>
@@ -28,9 +28,10 @@
       <p class="metadata"><time datetime="2026-09-29">2026-09-29</time></p>
       <p class="reading-status" hidden></p>
     </header>
-    <div class="story-body">
+    <div class="story-body" id="story-pages">
       
-      <p>I have been angry for as long as I can remember.</p>
+      <div class="book-page" id="page-1" role="group" aria-label="Page 1 of 5" tabindex="-1">
+<p>I have been angry for as long as I can remember.</p>
 <p>Not the loud kind of angry all the time. Not the kind that punches walls or wakes up every morning looking for somebody to fight. Mine has always been more attentive than that.</p>
 <p>I notice things.</p>
 <p>I notice the hesitation in somebody’s voice when the story they are telling is not quite true. I notice when the person with the most authority in the room is also the least qualified to have it. I notice when somebody is being humiliated and everyone else decides, for reasons I have never understood, that looking away is the more civilized thing to do.</p>
@@ -48,6 +49,8 @@
 <p>Learn to smile politely at liars because pointing out the lie makes everybody uncomfortable?</p>
 <p>I have tried to understand that logic.</p>
 <p>I still don’t.</p>
+</div>
+<div class="book-page" id="page-2" role="group" aria-label="Page 2 of 5" tabindex="-1">
 <p>My anger has never been especially selective.</p>
 <p>I hate irresponsible fathers. I hate abusive mothers. I hate people who walk into every room already convinced they are the smartest person in it. People who believe the rules are for everybody except them. People who spend their lives mistreating everyone around them and somehow remain permanently astonished that life keeps happening to them.</p>
 <p>Liars. Cheaters. Manipulators. Gaslighters.</p>
@@ -59,6 +62,8 @@
 <p>Sometimes I probably should not.</p>
 <p>Sometimes I absolutely should.</p>
 <p>The problem is that, in the moment, I usually cannot tell the difference.</p>
+</div>
+<div class="book-page" id="page-3" role="group" aria-label="Page 3 of 5" tabindex="-1">
 <p>This has not made me particularly good at collecting people.</p>
 <p>There are people I have liked, of course. Good people, or at least people who seemed good in the beginning.</p>
 <p>Hard workers. Decent neighbors. Funny coworkers. People who appeared to have survived adulthood without becoming completely unbearable.</p>
@@ -76,6 +81,8 @@
 <p>It is a fair question.</p>
 <p>I have asked it many times.</p>
 <p>I still ask it.</p>
+</div>
+<div class="book-page" id="page-4" role="group" aria-label="Page 4 of 5" tabindex="-1">
 <p>But there is another part of this story.</p>
 <p>A much smaller group of people exists in my life.</p>
 <p>Very small.</p>
@@ -94,6 +101,8 @@
 <p>The things I saw.</p>
 <p>The things I survived.</p>
 <p>The things I promised myself I would never become.</p>
+</div>
+<div class="book-page" id="page-5" role="group" aria-label="Page 5 of 5" tabindex="-1">
 <p>Maybe none of it happened for a reason. Maybe that is simply something human beings tell themselves because randomness is harder to live with.</p>
 <p>I don’t know.</p>
 <p>But I do know this:</p>
@@ -108,10 +117,16 @@
 <p>The other reason is much simpler.</p>
 <p>My children finally arrived.</p>
 <p>And someday, I want them to understand who was waiting for them.</p>
-
+</div>
     </div>
     <footer class="story-navigation reader-end">
-      <p class="small">You’re caught up with Henry’s story.</p>
+      <nav class="page-turner" data-page-navigation aria-label="Book pages" hidden>
+        <button type="button" data-page-previous aria-controls="story-pages" aria-label="Previous page">←</button>
+        <span class="page-label" data-page-label role="status" aria-live="polite" aria-atomic="true"></span>
+        <button type="button" data-page-next aria-controls="story-pages" aria-label="Next page">→</button>
+        <span class="swipe-hint">Swipe left or right to turn the page.</span>
+      </nav>
+      <div data-story-end><p class="small">You’re caught up with Henry’s story.</p></div>
       
       <nav class="installment-nav" aria-label="Installment"><span></span><a href="/story/chapter-01/">Chapter Index</a><span></span></nav>
       

@@ -1,4 +1,5 @@
 import { installments } from './story-manifest.js';
+import { createPageReader } from './reader-pages.js?v=book-pages-1';
 
 export const STORAGE_KEY = 'katamisky_reader_progress';
 const byURL = new Map(installments.map(item => [item.url, item]));
@@ -36,11 +37,16 @@ if (story && byURL.has(location.pathname)) {
   let lastSave = -Infinity;
   let pending = false;
   let storageFailed = false;
+  const pageReader = createPageReader(story, () => {measure(); save(true);});
   function measure() {
-    const rect = story.getBoundingClientRect();
+    const section = pageReader?.element || story;
+    const rect = section.getBoundingClientRect();
     const start = rect.top + window.scrollY;
-    const travel = Math.max(1, story.offsetHeight - window.innerHeight * .65);
-    fraction = Math.max(0, Math.min(1, (window.scrollY + window.innerHeight * .15 - start) / travel));
+    const travel = Math.max(1, section.offsetHeight - window.innerHeight * .65);
+    const offset = pageReader ? 0 : window.innerHeight * .15;
+    const withinPage = Math.max(0, Math.min(1, (window.scrollY + offset - start) / travel));
+    // A completed screen still belongs to this page when resuming later.
+    fraction = pageReader ? (pageReader.index + Math.min(.999999, withinPage)) / pageReader.count : withinPage;
     if (bar) bar.style.transform = `scaleX(${fraction})`;
     indicator?.setAttribute('aria-valuenow', String(Math.round(fraction * 100)));
     if (status) status.textContent = `${Math.round(fraction * 100)}% of this installment${storageFailed ? ' · Reading position cannot be saved in this browser.' : ''}`;
@@ -71,9 +77,12 @@ if (story && byURL.has(location.pathname)) {
   const saved = readProgress();
   if (location.hash === '#resume' && saved?.url === location.pathname) {
     Promise.race([document.fonts.ready, new Promise(resolve => setTimeout(resolve, 1000))]).then(() => {
-      const start = story.getBoundingClientRect().top + window.scrollY;
-      const travel = Math.max(1, story.offsetHeight - window.innerHeight * .65);
-      window.scrollTo({top: Math.max(0, start + saved.fraction * travel - window.innerHeight * .15), behavior:'instant'});
+      const localFraction = pageReader ? pageReader.restore(saved.fraction) : saved.fraction;
+      const section = pageReader?.element || story;
+      const start = section.getBoundingClientRect().top + window.scrollY;
+      const travel = Math.max(1, section.offsetHeight - window.innerHeight * .65);
+      const offset = pageReader ? 0 : window.innerHeight * .15;
+      window.scrollTo({top: Math.max(0, start + localFraction * travel - offset), behavior:'instant'});
       measure();
     });
   }
