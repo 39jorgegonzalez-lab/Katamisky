@@ -1,7 +1,13 @@
 [
   {
-    "id": "chapter-01",
-    "number": "01",
+    "id": "prologue",
+    "kind": "prologue",
+    "number": "",
     "title": "Prologue"
+  },
+  {
+    "id": "chapter-01",
+    "number": "1",
+    "title": "Before Me"
   }
 ]

@@ -2,13 +2,13 @@
 export const installments = [
   {
     "url": "/story/chapter-01/i-have-been-angry/",
-    "chapter": "Chapter 01",
+    "chapter": "Prologue",
     "installment": "I have been angry for as long as I can remember.",
     "storyOrder": 1
   },
   {
     "url": "/story/chapter-01/before-there-was-me/",
-    "chapter": "Chapter 01",
+    "chapter": "Chapter 1 \u2014 Before Me",
     "installment": "Before there was me, there was already a story.",
     "storyOrder": 2
   }

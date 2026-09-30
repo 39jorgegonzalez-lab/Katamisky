@@ -5,9 +5,9 @@
   <div class="reading-progress" role="progressbar" aria-label="Current installment reading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" hidden><span></span></div>
   <article class="story-installment reader-shell">
     <header class="story-header reader-header">
-      <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/story/">Story</a><span aria-hidden="true">/</span><a href="{{CHAPTER_URL}}">Chapter {{CHAPTER_NUMBER}}</a></nav>
+      <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/story/">Story</a><span aria-hidden="true">/</span><a href="{{CHAPTER_URL}}">{{CHAPTER_LABEL}}</a></nav>
       <!-- CHAPTER NUMBER / CHAPTER TITLE: author-approved metadata only -->
-      <p class="eyebrow">Chapter {{CHAPTER_NUMBER}} · Installment {{INSTALLMENT_NUMBER}}</p>
+      <p class="eyebrow">{{CHAPTER_LABEL}} · Installment {{INSTALLMENT_NUMBER}}</p>
       <p class="chapter-title">{{CHAPTER_TITLE}}</p>
       <!-- STORY TITLE: replace through author-approved installment metadata -->
       <h1>{{TITLE}}</h1>
@@ -28,7 +28,7 @@
       </nav>
       <div data-story-end>{{END_STATE}}</div>
       <!-- PREVIOUS / NEXT NAVIGATION: generated from publication order -->
-      <nav class="installment-nav" aria-label="Installment">{{PREVIOUS}}<a href="{{CHAPTER_URL}}">Chapter Index</a>{{NEXT}}</nav>
+      <nav class="installment-nav" aria-label="Installment">{{PREVIOUS}}<a href="{{CHAPTER_URL}}">{{INDEX_LABEL}}</a>{{NEXT}}</nav>
       <!-- OPTIONAL OBJECTS FROM THIS MEMORY: absent unless metadata supplied -->
       {{OBJECTS}}
       <!-- LATEST-PAGE EMAIL MODULE: omitted until a real service is approved -->

@@ -34,6 +34,16 @@ lives in `content/installments.json`; entries appear in reading order. The `id` 
 permanent slug: `/story/chapter-01/meaningful-slug/`. Optional `pageNumber` is a positive
 integer independent of that URL. Do not use page-number URLs.
 
+Section order is defined by `chapters.json`, with installment order preserved within
+each section. `prologue` is the unnumbered Prologue (`kind: "prologue"`, `number: ""`)
+and contains only “I have been angry for as long as I can remember.”
+`chapter-01` is Chapter 1 — Before Me, beginning with “Before there was me, there was
+already a story.” Future chapters follow Chapter 1. Parts are not currently modeled.
+The Prologue installment retains its previously published address through `permalink`;
+this separates hierarchy from permanent URLs and preserves existing reading positions.
+Never change a published permalink merely to match its section ID. Refresh the reader
+module/manifest cache versions when changing published metadata.
+
 For paragraph-only installments, optional `pageBreaks` lists the paragraph numbers
 after which a book page ends (for example, `[18, 29, 46, 64]` creates five pages).
 These are display boundaries only: the builder preserves every paragraph's text

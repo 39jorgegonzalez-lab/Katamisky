@@ -17,6 +17,23 @@ e = lambda value: html.escape(str(value), quote=True)
 SLUG = re.compile(r'[a-z0-9]+(?:-[a-z0-9]+)*')
 
 
+def chapter_label(chapter):
+    return 'Prologue' if chapter.get('kind') == 'prologue' else 'Chapter '+chapter['number']
+
+
+def chapter_heading(chapter):
+    label = chapter_label(chapter)
+    return label + (' — '+chapter['title'] if chapter.get('title') and chapter['title'] != label else '')
+
+
+def installment_count(group):
+    return str(len(group))+' published installment'+('s' if len(group) != 1 else '')
+
+
+def installment_url(item):
+    return item.get('permalink', f'/story/{item["chapter"]}/{item["id"]}/')
+
+
 def resume():
     return '<div class="resume" data-resume hidden><p class="eyebrow">Welcome back.</p><a href="/story/">Continue Reading</a></div>'
 
@@ -25,7 +42,7 @@ def layout(title, description, url, body, active='', reader=False, document=Fals
     styles = ['fonts', 'site', 'components'] + (['home'] if home else []) + (['reader'] if reader else []) + (['document-font'] if document else [])
     versions = {'reader': '?v=book-pages-1', 'home': '?v=landing-1'}
     links = '\n'.join(f'<link rel="stylesheet" href="/assets/css/{s}.css{versions.get(s, "")}">' for s in styles)
-    nav = ''.join(f'<a href="{href}"'+(' aria-current="page"' if label == active else '')+f'>{label}</a>' for label, href in [('Story','/story/'),('Chapters','/story/chapter-01/'),('Archive','/archive/'),('About','/about.html')])
+    nav = ''.join(f'<a href="{href}"'+(' aria-current="page"' if label == active else '')+f'>{label}</a>' for label, href in [('Story','/story/'),('Chapters','/story/#chapters-title'),('Archive','/archive/'),('About','/about.html')])
     return f'''<!DOCTYPE html>
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
@@ -34,7 +51,7 @@ def layout(title, description, url, body, active='', reader=False, document=Fals
 <meta property="og:title" content="{e(title)} | KATAMISKY"><meta property="og:description" content="{e(description)}">
 <meta property="og:type" content="{'article' if reader else 'website'}"><meta property="og:url" content="{BASE}{e(url)}">
 <link rel="icon" type="image/svg+xml" href="/assets/images/site/favicon.svg">
-{links}<script type="module" src="/assets/js/continue-reading.js?v=installments-20260930-2"></script>
+{links}<script type="module" src="/assets/js/continue-reading.js?v=structure-20260930"></script>
 </head><body>
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="site-header"><div class="container header-inner"><a class="brand" href="/" aria-label="KATAMISKY home">KATAMISKY</a><nav class="site-nav" aria-label="Main">{nav}</nav></div></header>
@@ -45,9 +62,9 @@ def layout(title, description, url, body, active='', reader=False, document=Fals
 
 def listing(group, latest_url):
     rows = []
-    for item in group:
+    for installment_number, item in enumerate(group, 1):
         latest = ' · Latest installment' if item['url'] == latest_url else ''
-        rows.append(f'<li><a href="{item["url"]}"><span class="index-number">{item["storyOrder"]:02}</span><span><span class="item-title">{e(item["title"])}</span><span class="small"><time datetime="{item["date"]}">{item["date"]}</time>{latest}</span><span class="current-position" data-position="{item["url"]}" hidden>Your saved reading position</span></span><span aria-hidden="true">→</span></a></li>')
+        rows.append(f'<li><a href="{item["url"]}"><span class="index-number">{installment_number:02}</span><span><span class="item-title">{e(item["title"])}</span><span class="small"><time datetime="{item["date"]}">{item["date"]}</time>{latest}</span><span class="current-position" data-position="{item["url"]}" hidden>Your saved reading position</span></span><span aria-hidden="true">→</span></a></li>')
     return '<ol class="index-list">'+''.join(rows)+'</ol>'
 
 
@@ -115,6 +132,10 @@ def validate_metadata(root, chapters, entries):
             raise ValueError('Chapters need unique IDs and string chapter numbers')
         if chapter.get('title') is not None and not isinstance(chapter['title'], str):
             raise ValueError('Chapter title must be text or null')
+        if chapter.get('kind', 'chapter') not in ('chapter', 'prologue'):
+            raise ValueError('Section kind must be chapter or prologue')
+        if chapter.get('kind') == 'prologue' and chapter['number']:
+            raise ValueError('The prologue is unnumbered')
         chapter_ids.add(chapter['id'])
     urls = set()
     sources = set()
@@ -125,7 +146,9 @@ def validate_metadata(root, chapters, entries):
             raise ValueError('authorApproved must be true or false, not text')
         if not isinstance(item.get('id'), str) or not SLUG.fullmatch(item['id']) or item.get('chapter') not in chapter_ids:
             raise ValueError('Invalid installment/chapter slug')
-        url = (item['chapter'], item['id'])
+        url = installment_url(item)
+        if not isinstance(url, str) or not re.fullmatch(r'/story/[a-z0-9-]+/[a-z0-9-]+/', url):
+            raise ValueError('Invalid permanent installment URL')
         if url in urls:
             raise ValueError('Duplicate permanent URL (including draft entries)')
         urls.add(url)
@@ -195,7 +218,8 @@ def build(root, export=False, preview=False):
             raise ValueError('Invalid chapter slug')
     if any(i.get('status') not in ('draft','published') for i in entries):
         raise ValueError('Only draft and published statuses are supported; no public development installments')
-    items = [dict(i) for i in entries if i['status'] == 'published']
+    chapter_order = {c['id']: n for n, c in enumerate(chapters)}
+    items = sorted([dict(i) for i in entries if i['status'] == 'published'], key=lambda i: chapter_order[i['chapter']])
     urls = set()
     for order, item in enumerate(items, 1):
         if not SLUG.fullmatch(item['id']) or item['chapter'] not in chapter_map:
@@ -217,7 +241,7 @@ def build(root, export=False, preview=False):
         if 'document-text' in prose and not item.get('document'):
             raise ValueError('Document transcription requires document: true')
         item['prose'] = book_pages(prose, item.get('pageBreaks'))
-        item['url'] = f'/story/{item["chapter"]}/{item["id"]}/'
+        item['url'] = installment_url(item)
         if item['url'] in urls:
             raise ValueError('Duplicate permanent URL')
         urls.add(item['url'])
@@ -253,29 +277,30 @@ def build(root, export=False, preview=False):
     story = f'''<main id="main" tabindex="-1" class="container"><header class="page-heading"><p class="eyebrow">KATAMISKY</p><h1>A Serialized<br>Illustrated Memoir</h1>{begin()}<p>{'Read the published installments in order, or resume your saved place.' if first else 'The first installment is being prepared. Published writing will appear here, in reading order.'}</p>{resume()}</header><section aria-labelledby="chapters-title"><h2 id="chapters-title">Chapters</h2><ol class="index-list">'''
     for c in chapters:
         group = [i for i in items if i['chapter']==c['id']]
-        label = e(c['title']) if c.get('title') else 'Chapter '+e(c['number'])
-        state = str(len(group))+' published installment'+('s' if len(group)!=1 else '') if group else 'Not yet published'
+        label = e(chapter_heading(c))
+        state = installment_count(group) if group else 'Not yet published'
         story += f'<li><a href="/story/{c["id"]}/"><span class="index-number">{e(c["number"])}</span><span><span class="item-title">{label}</span><span class="small">{state}</span></span><span aria-hidden="true">→</span></a></li>'
     story += '</ol></section><a class="button secondary" href="/archive/">Visit the archive</a></main>'
     page('story/index.html','Story','Read Henry’s serialized illustrated memoir in chapter and installment order.','/story/',story,'Story')
     for c in chapters:
         group = [i for i in items if i['chapter']==c['id']]
         title = c.get('title') or 'Chapter '+c['number']
-        body = f'''<main id="main" tabindex="-1" class="container"><header class="page-heading"><p class="eyebrow">Chapter {e(c['number'])}</p><h1>{e(title)}</h1><p class="lead">{'Read the published installments below.' if group else 'This chapter has not yet been published.'}</p>{'<p>The chapter title and first installment will appear when they are ready.</p>' if not c.get('title') else ''}<a href="/story/">← All chapters</a></header>{resume()}{'<section><h2>Installments</h2>'+listing(group, latest)+'</section>' if group else '<p>No installments are available yet.</p>'}<p><a class="button secondary" href="/archive/">Explore the archive →</a></p></main>'''
-        page(f'story/{c["id"]}/index.html',f'Chapter {c["number"]}'+(' — '+c['title'] if c.get('title') else ''),f'Chapter {c["number"]} of Henry’s serialized illustrated memoir.',f'/story/{c["id"]}/',body,'Chapters')
+        body = f'''<main id="main" tabindex="-1" class="container"><header class="page-heading"><p class="eyebrow">{e(chapter_label(c))}</p><h1>{e(title)}</h1><p class="lead">{installment_count(group) if group else 'This chapter has not yet been published.'}</p>{'<p>The chapter title and first installment will appear when they are ready.</p>' if not c.get('title') else ''}<a href="/story/">← All chapters</a></header>{resume()}{'<section><h2>Installments</h2>'+listing(group, latest)+'</section>' if group else '<p>No installments are available yet.</p>'}<p><a class="button secondary" href="/archive/">Explore the archive →</a></p></main>'''
+        page(f'story/{c["id"]}/index.html',chapter_heading(c),chapter_heading(c)+' of Henry’s serialized illustrated memoir.',f'/story/{c["id"]}/',body,'Chapters')
     template = (root/'templates/story-installment.html').read_text()
     for n,item in enumerate(items):
         c = chapter_map[item['chapter']]
         values = {'CHAPTER_URL':f'/story/{c["id"]}/','CHAPTER_NUMBER':e(c['number']),'CHAPTER_TITLE':e(c['title']),'INSTALLMENT_NUMBER':str(n+1),'TITLE':e(item['title']),'DATE':e(item['date']),'DATE_LABEL':e(item['date']),'PAGE_NUMBER': ' · Page '+e(item['pageNumber']) if item.get('pageNumber') is not None else '', 'MEMOIR_TEXT':item['prose'], 'END_STATE': '<p class="small">You’re caught up with Henry’s story.</p>' if item['url']==latest else '', 'PREVIOUS':f'<a href="{items[n-1]["url"]}" rel="prev">← Previous</a>' if n else '<span></span>', 'NEXT':f'<a class="next" href="{items[n+1]["url"]}" rel="next" data-next>Next →</a>' if n+1<len(items) else '<span></span>', 'OBJECTS':object_module(item), 'EMAIL_MODULE':''}
+        values.update(CHAPTER_LABEL=e(chapter_label(c)), INDEX_LABEL='Prologue Index' if c.get('kind') == 'prologue' else 'Chapter Index', INSTALLMENT_NUMBER=str(sum(i['chapter'] == item['chapter'] for i in items[:n+1])))
         # Editorial comments remain in the excluded source, not the visitor document.
         markup = re.sub(r'<!--.*?-->','',template,flags=re.S)
         markup = re.sub(r'\{\{([A-Z_]+)\}\}',lambda m:values[m[1]],markup)
-        page(item['url'].lstrip('/')+'index.html',item['title']+' — Chapter '+c['number'],item['description'],item['url'],markup,reader=True,document=item.get('document',False))
+        page(item['url'].lstrip('/')+'index.html',item['title']+' — '+chapter_label(c),item['description'],item['url'],markup,reader=True,document=item.get('document',False))
     archive = '<main id="main" tabindex="-1" class="container"><header class="page-heading"><p class="eyebrow">KATAMISKY</p><h1>The archive</h1><p class="lead">'+('Published installments, organized by chapter.' if items else 'The archive will grow with Henry’s story.')+'</p></header>'
     for c in chapters:
         group = [i for i in items if i['chapter']==c['id']]
         if group:
-            archive += f'<section><h2>Chapter {e(c["number"])} · {e(c["title"])}</h2>'+listing(group,latest)+'</section>'
+            archive += f'<section><h2>{e(chapter_heading(c))}</h2><p class="small">{installment_count(group)}</p>'+listing(group,latest)+'</section>'
     if not items:
         archive += '<p>No memoir installments have been published yet.</p>'
     archive += '<p><a class="button secondary" href="/story/">Return to the story →</a></p></main>'
@@ -284,7 +309,7 @@ def build(root, export=False, preview=False):
     page('about.html','About','About KATAMISKY, the permanent digital home of Henry’s serialized illustrated memoir.','/about.html',about,'About')
     privacy = '''<main id="main" tabindex="-1" class="container"><header class="page-heading"><p class="eyebrow">Reader privacy</p><h1>Your reading place<br>stays in your browser.</h1></header><div class="prose"><h2>Reading position</h2><p>When installments are available, this site can save the current installment address, title, order, approximate reading position, and save time in your browser using <code>katamisky_reader_progress</code>. This reading history is not sent to a server. Clearing this site’s browser data removes it.</p><p>No account is required. If local storage is unavailable, the text and navigation still work.</p><h2>Email updates</h2><p>No newsletter service is connected and this site does not collect email addresses through a signup form. This notice will be updated before an email service is enabled.</p><h2>Site resources</h2><p>Fonts, styles, and scripts are served with the site. No analytics, advertising scripts, or social feeds have been added. GitHub Pages processes requests to deliver the site under its own privacy practices.</p><h2>External links</h2><p>External services have their own privacy practices. Any future affiliate links will be disclosed separately from the story.</p></div></main>'''
     page('privacy/index.html','Reader Privacy','How KATAMISKY saves reading progress in your browser and handles site resources.','/privacy/',privacy)
-    manifest = [{'url':i['url'],'chapter':'Chapter '+chapter_map[i['chapter']]['number'],'installment':i['title'],'storyOrder':i['storyOrder']} for i in items]
+    manifest = [{'url':i['url'],'chapter':chapter_heading(chapter_map[i['chapter']]),'installment':i['title'],'storyOrder':i['storyOrder']} for i in items]
     pages['assets/js/story-manifest.js'] = '// Generated by scripts/build.py; published installments only.\nexport const installments = '+json.dumps(manifest,indent=2)+';\n'
     site_urls = ['/', '/story/', '/story/chapter-01/', '/archive/', '/about.html', '/privacy/'] + [f'/story/{c["id"]}/' for c in chapters if c['id']!='chapter-01'] + [i['url'] for i in items]
     pages['sitemap.xml'] = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+''.join('<url><loc>'+BASE+u+'</loc></url>' for u in site_urls)+'</urlset>\n'
