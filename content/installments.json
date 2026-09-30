@@ -12,5 +12,19 @@
     "pageBreaks": [18, 29, 46, 64],
     "document": false,
     "objects": []
+  },
+  {
+    "id": "before-there-was-me",
+    "chapter": "chapter-01",
+    "title": "Before there was me, there was already a story.",
+    "description": "Before there was me, there was already a story.",
+    "date": "2026-09-30",
+    "pageNumber": null,
+    "status": "published",
+    "authorApproved": true,
+    "source": "before-there-was-me.html",
+    "pageBreaks": [12, 29, 41, 57, 81, 99, 115],
+    "document": false,
+    "objects": []
   }
 ]
