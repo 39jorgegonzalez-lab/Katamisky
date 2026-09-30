@@ -1,0 +1,32 @@
+<main id="main" tabindex="-1" class="container home">
+  <section class="home-hero" aria-labelledby="home-title">
+    <div class="home-mastline">
+      <p class="eyebrow">A Serialized Illustrated Memoir</p>
+      <p class="eyebrow">By Henry</p>
+    </div>
+    <div class="home-opening">
+      <div class="home-invitation">
+        <p class="eyebrow home-chapter"><span>{{CHAPTER_NUMBER}}</span> {{CHAPTER_TITLE}}</p>
+        <h1 id="home-title">{{OPENING_TITLE}}</h1>
+        <div class="home-actions">{{BEGIN}}<a class="home-text-link" href="/about.html">About the memoir <span aria-hidden="true">↗</span></a></div>
+        {{RESUME}}
+      </div>
+      <div class="home-book-scene" aria-hidden="true">
+        <div class="home-book">
+          <div class="home-book-cover">
+            <span class="home-book-title">KATAMISKY</span>
+            <span class="home-book-subtitle">A Serialized<br>Illustrated Memoir</span>
+            <span class="home-book-initial">K</span>
+            <span class="home-book-author">Henry</span>
+            <span class="home-book-edition">A living digital book</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="home-reading-note"><span class="eyebrow">The story begins here</span><p class="small">{{READING_NOTE}}</p></div>
+  </section>
+  <section class="home-afterword" aria-label="An invitation to Henry’s story">
+    <div class="home-context"><p class="eyebrow">Behind the story</p><p>Henry’s memoir.<br>One installment at a time.</p><a class="home-text-link" href="/story/">Explore the story <span aria-hidden="true">→</span></a></div>
+    {{EXCERPT}}
+  </section>
+</main>

@@ -21,9 +21,10 @@ def resume():
     return '<div class="resume" data-resume hidden><p class="eyebrow">Welcome back.</p><a href="/story/">Continue Reading</a></div>'
 
 
-def layout(title, description, url, body, active='', reader=False, document=False):
-    styles = ['fonts', 'site', 'components'] + (['reader'] if reader else []) + (['document-font'] if document else [])
-    links = '\n'.join(f'<link rel="stylesheet" href="/assets/css/{s}.css{"?v=book-pages-1" if s == "reader" else ""}">' for s in styles)
+def layout(title, description, url, body, active='', reader=False, document=False, home=False):
+    styles = ['fonts', 'site', 'components'] + (['home'] if home else []) + (['reader'] if reader else []) + (['document-font'] if document else [])
+    versions = {'reader': '?v=book-pages-1', 'home': '?v=landing-1'}
+    links = '\n'.join(f'<link rel="stylesheet" href="/assets/css/{s}.css{versions.get(s, "")}">' for s in styles)
     nav = ''.join(f'<a href="{href}"'+(' aria-current="page"' if label == active else '')+f'>{label}</a>' for label, href in [('Story','/story/'),('Chapters','/story/chapter-01/'),('Archive','/archive/'),('About','/about.html')])
     return f'''<!DOCTYPE html>
 <html lang="en"><head>
@@ -235,8 +236,20 @@ def build(root, export=False, preview=False):
         pages[path] = layout(*args, **kwargs)
     def begin():
         return f'<a class="button" href="{first}">Begin the Story →</a>' if first else '<p class="lead forthcoming">Henry’s story begins here soon.</p>'
-    home = f'''<main id="main" tabindex="-1" class="container"><section class="hero" aria-labelledby="home-title"><p class="eyebrow">A living digital book</p><h1 id="home-title">KATAMISKY</h1><p class="subtitle">A Serialized Illustrated Memoir</p>{begin()}<div class="actions"><a class="button{' secondary' if first else ''}" href="/story/">Explore the Story →</a><a class="button secondary" href="/about.html">About the memoir</a></div>{resume()}<p class="small hero-foot">{'Read in order, or return to your saved place.' if first else 'The first installment has not yet been published.'}</p></section><section class="home-intro" aria-labelledby="intro-title"><div><p class="eyebrow">Henry’s story</p><h2 id="intro-title">The story comes first.</h2></div><div><p class="lead">KATAMISKY is the permanent digital home of Henry’s serialized illustrated memoir.</p><p>Chapters and installments will remain accessible as the story grows. Original illustrations and clearly identified archival material will support the writing.</p><a href="/story/chapter-01/">View Chapter 01 →</a></div></section></main>'''
-    page('index.html','A Serialized Illustrated Memoir','KATAMISKY is the permanent digital home of Henry’s serialized illustrated memoir.','/',home)
+    opening_chapter = chapter_map[items[0]['chapter']] if items else chapters[0]
+    # Draw the title and excerpt directly from approved, published material.
+    # The manuscript itself and its paragraph boundaries remain untouched.
+    opening_paragraphs = re.findall(r'<p(?:\s[^>]*)?>.*?</p>', items[0]['prose'], re.S) if items else []
+    home_values = {
+        'OPENING_TITLE': e(items[0]['title']) if items else 'Every life holds a story.',
+        'CHAPTER_TITLE': e(opening_chapter.get('title') or 'The beginning'),
+        'CHAPTER_NUMBER': e(opening_chapter['number']),
+        'BEGIN': begin(), 'RESUME': resume(),
+        'READING_NOTE': 'Read in order. Return to your saved place.' if first else 'The first installment is being prepared.',
+        'EXCERPT': '<figure class="home-excerpt"><blockquote>'+opening_paragraphs[-1]+'</blockquote><figcaption class="eyebrow">From '+e(opening_chapter.get('title') or 'the story')+'</figcaption></figure>' if opening_paragraphs else '<p class="lead">The permanent digital home of Henry’s story.</p>',
+    }
+    home = re.sub(r'\{\{([A-Z_]+)\}\}', lambda m: home_values[m[1]], (root/'templates/home.html').read_text())
+    page('index.html','A Serialized Illustrated Memoir','KATAMISKY is the permanent digital home of Henry’s serialized illustrated memoir.','/',home,home=True)
     story = f'''<main id="main" tabindex="-1" class="container"><header class="page-heading"><p class="eyebrow">KATAMISKY</p><h1>A Serialized<br>Illustrated Memoir</h1>{begin()}<p>{'Read the published installments in order, or resume your saved place.' if first else 'The first installment is being prepared. Published writing will appear here, in reading order.'}</p>{resume()}</header><section aria-labelledby="chapters-title"><h2 id="chapters-title">Chapters</h2><ol class="index-list">'''
     for c in chapters:
         group = [i for i in items if i['chapter']==c['id']]
