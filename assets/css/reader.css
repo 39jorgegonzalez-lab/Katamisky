@@ -1,4 +1,4 @@
-.reader-shell {max-width:var(--book-width);margin:2rem auto 0;background:linear-gradient(90deg,var(--paper-light),var(--paper) 98%);border:1px solid var(--paper-edge);box-shadow:0 12px 36px var(--shadow-soft),3px 3px 0 var(--paper-edge);padding:3rem clamp(1.3rem,6vw,5rem)}
+.reader-shell {max-width:var(--book-width);margin:2rem auto 0;background-color:var(--paper-light);background-image:url(/assets/images/site/paper-grain.svg),radial-gradient(ellipse at 12% 15%,rgba(255,250,240,.55),transparent 65%),linear-gradient(100deg,#f8f0e1,#f2e4ce 98%);background-size:256px 256px,100% 100%,100% 100%;background-repeat:repeat,no-repeat,no-repeat;border:1px solid var(--paper-edge);box-shadow:0 12px 36px var(--shadow-soft),3px 3px 0 var(--paper-edge);padding:3rem clamp(1.3rem,6vw,5rem)}
 .reader-header,.story-body,.reader-end {max-width:var(--reader-width);margin-inline:auto}
 .breadcrumbs {display:flex;flex-wrap:wrap;gap:.2rem .6rem;font-size:.8rem;margin-bottom:2rem;align-items:center}
 .breadcrumbs a {display:inline-block;min-height:44px;padding:.5rem 0}
@@ -25,7 +25,7 @@
 .reading-status {font: .75rem var(--font-ui);color:var(--book-muted);margin:1rem 0}
 @media(max-width:600px) {
  .reader-container {width:100%}
- .reader-shell {margin:.75rem 0 0;padding:1.3rem max(1rem,env(safe-area-inset-left));border-inline:0;box-shadow:none;background:var(--paper-light)}
+ .reader-shell {margin:.75rem 0 0;padding:1.3rem max(1rem,env(safe-area-inset-left));border-inline:0;box-shadow:none}
  .reader-header h1 {font-size:2rem}
  .reader-header .chapter-title {margin-bottom:1.1rem}
  .breadcrumbs {margin-bottom:1rem}
