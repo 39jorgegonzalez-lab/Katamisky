@@ -34,7 +34,7 @@ def layout(title, description, url, body, active='', reader=False, document=Fals
 <meta property="og:title" content="{e(title)} | KATAMISKY"><meta property="og:description" content="{e(description)}">
 <meta property="og:type" content="{'article' if reader else 'website'}"><meta property="og:url" content="{BASE}{e(url)}">
 <link rel="icon" type="image/svg+xml" href="/assets/images/site/favicon.svg">
-{links}<script type="module" src="/assets/js/continue-reading.js?v=book-pages-1"></script>
+{links}<script type="module" src="/assets/js/continue-reading.js?v=installments-20260930-2"></script>
 </head><body>
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="site-header"><div class="container header-inner"><a class="brand" href="/" aria-label="KATAMISKY home">KATAMISKY</a><nav class="site-nav" aria-label="Main">{nav}</nav></div></header>
