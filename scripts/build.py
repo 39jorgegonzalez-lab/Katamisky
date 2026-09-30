@@ -23,7 +23,7 @@ def resume():
 
 def layout(title, description, url, body, active='', reader=False, document=False):
     styles = ['fonts', 'site', 'components'] + (['reader'] if reader else []) + (['document-font'] if document else [])
-    links = '\n'.join(f'<link rel="stylesheet" href="/assets/css/{s}.css">' for s in styles)
+    links = '\n'.join(f'<link rel="stylesheet" href="/assets/css/{s}.css{"?v=paper-grain-1" if s == "reader" else ""}">' for s in styles)
     nav = ''.join(f'<a href="{href}"'+(' aria-current="page"' if label == active else '')+f'>{label}</a>' for label, href in [('Story','/story/'),('Chapters','/story/chapter-01/'),('Archive','/archive/'),('About','/about.html')])
     return f'''<!DOCTYPE html>
 <html lang="en"><head>
