@@ -1,1 +1,15 @@
-[]
+[
+  {
+    "id": "i-have-been-angry",
+    "chapter": "chapter-01",
+    "title": "I have been angry for as long as I can remember.",
+    "description": "I have been angry for as long as I can remember.",
+    "date": "2026-09-29",
+    "pageNumber": null,
+    "status": "published",
+    "authorApproved": true,
+    "source": "i-have-been-angry.html",
+    "document": false,
+    "objects": []
+  }
+]

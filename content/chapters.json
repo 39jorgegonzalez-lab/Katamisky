@@ -1,3 +1,7 @@
 [
-  {"id":"chapter-01","number":"01","title":null}
+  {
+    "id": "chapter-01",
+    "number": "01",
+    "title": "Prologue"
+  }
 ]
