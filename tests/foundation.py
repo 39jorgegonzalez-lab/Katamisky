@@ -57,7 +57,7 @@ assert '"chapter_id":"prologue"' in angry and '"chapter_id":"chapter-01"' in bef
 assert 'data-measure="next_installment"' in angry and 'data-measure="previous_installment"' in before
 assert 'data-measure="begin_story"' in (public/'index.html').read_text()
 assert 'data-measure="continue_reading"' in (public/'archive/index.html').read_text() or 'data-measure="continue_reading"' in (public/'story/index.html').read_text()
-print('PASS: all 9 public pages: SEO, schema syntax/relationships, unique metadata, image fallback, disabled analytics, 215 locked paragraphs and hierarchy.')
+print('PASS: all 9 public pages: SEO, schema syntax/relationships, unique metadata, image fallback, consent-gated analytics configuration, 215 locked paragraphs and hierarchy.')
 
 with tempfile.TemporaryDirectory(prefix='katamisky-scale-') as directory:
     root=Path(directory)

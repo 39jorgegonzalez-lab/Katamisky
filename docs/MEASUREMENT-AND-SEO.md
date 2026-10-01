@@ -39,36 +39,53 @@ sitemap. Neither robots nor a public repository protects private source material
 Content-hashed CSS and the entire reader import chain refresh on publication
 without changing bookmark URLs or the existing saved-position data format.
 
-## GA4 — prepared, disabled until owner setup
+## GA4 — consent-controlled activation
 
-No measurement ID was available. `content/site-settings.json` keeps
-`analytics.enabled` false and `measurementId` empty. In this state no Google
-tag loads and no analytics events/cookies are created. Do not claim receipt.
+On 2026-10-01 the owner supplied production Measurement ID `G-7ZGG7KGK9H`
+for `https://www.katamisky.com` and confirmed **Enhanced measurement OFF**.
+`content/site-settings.json` enables this ID using the existing integration.
+The public Measurement ID is not an API secret. No second implementation or
+Google Tag Manager container is installed. Keep Google signals, advertising
+personalization and user-provided data collection off in the Google property.
 
-1. In Google Analytics Admin, reuse the owner's KATAMISKY GA4 property if present;
-   otherwise create it and a Web stream for `https://www.katamisky.com`.
-   The owner confirms reporting time zone/currency and account terms.
-2. Admin → Data streams → Web stream → copy its public Measurement ID (`G-…`).
-   It is not an API secret. Never put a fake/test ID into production.
-3. Turn **Enhanced measurement off** for this stream, including browser-history
-   views, scrolls, outbound clicks, search, forms and downloads. The site sends
-   its own events. Keep Google signals, advertising personalization and
-   user-provided data collection off. Review data sharing, linked products and
-   retention; choose the shortest retention appropriate for the owner.
-4. Owner reviews the privacy/consent notice and relevant obligations. This code
-   is not a legal compliance determination.
-5. Enter the real ID in `content/site-settings.json`; set `enabled` true. Run the
-   full verification command and deploy through the existing Pages workflow.
-6. Use Tag Assistant and GA4 Realtime/DebugView to verify decline, grant,
-   withdrawal, blocked storage/tag loading, one pageview per document, navigation
-   events, no extra pageviews on page-turn hashes, milestone gates and receipt.
-   Receipt remains unverified until observed in the actual Google property.
+Actual Google receipt remains unverified until observed in the property.
+The connected reporting service currently returns `payment_required`.
+The production browser tooling exposes DOM and console checks, but no passive
+network/cookie inspection. Do not substitute local mocked tests or a script
+element in the DOM for actual Google delivery/receipt evidence.
+
+Owner verification:
+1. In a fresh private browser window, open developer tools before loading the
+   production site. In Network enable Preserve log and filter Google tag and
+   Analytics requests. Before consent, and after Decline, expect no Google tag
+   request, no Analytics collection, and no `_ga` cookies in Application → Cookies.
+2. Allow analytics. Expect one `gtag/js?id=G-7ZGG7KGK9H` request per document,
+   one manual `page_view`, and `installment_view` on a memoir installment.
+   Inspect collection payloads: `tid` must match the ID; `dl` is a clean canonical
+   URL, `dr` is empty, and `dt` contains technical IDs rather than memoir text.
+   No query strings, bookmark, form data or manuscript should be present.
+3. Test Begin the Story, Next/Previous installment, Continue Reading and Archive.
+   Book-page hash changes must add no `page_view` or `installment_view`.
+   Read each page with sufficient active time and full coverage to see the four
+   milestone events; jumps, rapid scrolling and restored bookmarks give no credit.
+4. On Privacy choose Decline analytics. After the withdrawal reload, expect no
+   new Google collection or tag request and no site-accessible `_ga` cookies.
+   Reading and navigation must still work.
+5. In the correct GA4 property open Reports → Realtime → Event count by event
+   name. Confirm `page_view`, `installment_view`, navigation events and reading
+   milestones from the consented test visit. DebugView is optional and requires
+   a debug session; the production code does not enable debug mode for readers.
+   A successful network response alone is not property receipt verification.
 
 Basic opt-in blocks the Google tag itself until grant. Decline and Allow use
 equivalent controls; choices remain available on Privacy when enabled. Consent
 and analytics cookies last up to 180 days. Withdrawal disables new collection,
 clears this site's `_ga` cookies and milestone flags, then reloads to unload the
-tag. It does not undo data already received by Google. No advertising, session
+tag. A full storage quota cannot preserve an old grant: withdrawal removes it
+before saving denial. If storage cannot be modified at all while an old grant
+remains readable, collection stops on the current page without reloading, and
+Privacy explains that site data must be cleared to keep it off on return.
+It does not undo data already received by Google. No advertising, session
 replay, fingerprinting or user-ID features are installed.
 
 `begin_story`, `next_installment`, `previous_installment`, `continue_reading`

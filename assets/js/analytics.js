@@ -137,7 +137,11 @@ function start(config) {
     }
   }
   function choose(value) {
-    try { localStorage.setItem(CONSENT_KEY, JSON.stringify({version:1,value,expires:Date.now()+CONSENT_DAYS*86400000})); } catch { /* choice applies to this document */ }
+    try {
+      // Remove an old grant first: a full storage quota must not restore it.
+      if (value === 'denied') localStorage.removeItem(CONSENT_KEY);
+      localStorage.setItem(CONSENT_KEY, JSON.stringify({version:1,value,expires:Date.now()+CONSENT_DAYS*86400000}));
+    } catch { /* choice applies to this document */ }
     if (banner) banner.hidden = true;
     const status = document.querySelector('[data-analytics-status]');
     if (status) status.textContent = value === 'granted' ? 'Optional analytics is allowed in this browser.' : 'Optional analytics is off in this browser.';
@@ -150,7 +154,8 @@ function start(config) {
       removeAnalyticsCookies();
       try { Object.keys(sessionStorage).filter(k => k.startsWith(MILESTONE_PREFIX)).forEach(k => sessionStorage.removeItem(k)); } catch { /* unavailable storage */ }
       // Unload the tag after withdrawal, avoiding denied-consent cookieless pings.
-      if (loaded) location.reload();
+      if (loaded && consent() !== 'granted') location.reload();
+      else if (loaded && status) status.textContent = 'Analytics is off on this page. Your browser could not save this choice. Clear this site’s browser data before returning to keep analytics off.';
     }
   }
   document.addEventListener('click', event => {
