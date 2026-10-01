@@ -5,7 +5,10 @@
     "build": "python3 scripts/build.py",
     "test:static": "python3 tests/check_static.py",
     "test:browser": "node tests/browser.cjs",
-    "test:publisher": "python3 tests/publisher.py"
+    "test:publisher": "python3 tests/publisher.py",
+    "verify": "python3 scripts/verify.py",
+    "test:analytics": "node tests/analytics.mjs",
+    "test:foundation": "python3 tests/foundation.py"
   },
   "devDependencies": {
     "playwright": "1.62.1",

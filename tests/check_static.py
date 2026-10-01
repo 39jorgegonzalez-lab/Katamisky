@@ -26,7 +26,7 @@ class Page(HTMLParser):
         if not self.stack or self.stack.pop()!=tag:self.errors.append('misnested '+tag)
 
 def check(root):
-    files=[root/'index.html',root/'about.html',*root.glob('story/**/index.html'),root/'archive/index.html',root/'privacy/index.html']
+    files=[root/'index.html',root/'about.html',*root.glob('story/**/index.html'),*root.glob('archive/**/index.html'),root/'privacy/index.html']
     pages={f:Page(f.read_text()) for f in files}
     titles=[]
     for f,p in pages.items():

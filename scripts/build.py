@@ -8,6 +8,7 @@ import shutil
 import tempfile
 import importlib.util
 import sys
+import hashlib
 from datetime import date
 from pathlib import Path
 from urllib.parse import urlsplit, parse_qs
@@ -15,6 +16,25 @@ from urllib.parse import urlsplit, parse_qs
 BASE = 'https://www.katamisky.com'
 e = lambda value: html.escape(str(value), quote=True)
 SLUG = re.compile(r'[a-z0-9]+(?:-[a-z0-9]+)*')
+SOCIAL_FALLBACK = {'path':'/assets/images/site/katamisky-share.png', 'alt':'KATAMISKY — A Serialized Illustrated Memoir by Henry', 'width':1200, 'height':630}
+ARCHIVE_PAGE_SIZE = 50
+
+
+def json_script(value):
+    return json.dumps(value, ensure_ascii=False, separators=(',', ':')).replace('<', '\\u003c').replace('>', '\\u003e').replace('&', '\\u0026')
+
+
+def schemas(title, description, url, crumbs, item=None, social=None):
+    author = {'@type':'Person', '@id':BASE+'/about.html#author', 'name':'Henry', 'url':BASE+'/about.html'}
+    website = {'@type':'WebSite', '@id':BASE+'/#website', 'url':BASE+'/', 'name':'KATAMISKY', 'inLanguage':'en', 'author':{'@id':author['@id']}}
+    graph = [website, author]
+    if crumbs:
+        graph.append({'@type':'BreadcrumbList', '@id':BASE+url+'#breadcrumb', 'itemListElement':[{'@type':'ListItem','position':n,'name':name,'item':BASE+path} for n,(name,path) in enumerate(crumbs,1)]})
+    if item:
+        article = {'@type':'Article', '@id':BASE+url+'#article', 'headline':item['title'], 'description':description, 'author':{'@id':author['@id']}, 'datePublished':item['date'], 'mainEntityOfPage':BASE+url, 'url':BASE+url, 'isPartOf':{'@id':website['@id']}, 'inLanguage':'en', 'image':BASE+social['path']}
+        if item.get('dateModified'): article['dateModified'] = item['dateModified']
+        graph.append(article)
+    return {'@context':'https://schema.org', '@graph':graph}
 
 
 def chapter_label(chapter):
@@ -35,13 +55,18 @@ def installment_url(item):
 
 
 def resume():
-    return '<div class="resume" data-resume hidden><p class="eyebrow">Welcome back.</p><a href="/story/">Continue Reading</a></div>'
+    return '<div class="resume" data-resume hidden><p class="eyebrow">Welcome back.</p><a href="/story/" data-measure="continue_reading">Continue Reading</a></div>'
 
 
-def layout(title, description, url, body, active='', reader=False, document=False, home=False):
+def layout(title, description, url, body, active='', reader=False, document=False, home=False, item=None, crumbs=None, context=None, analytics=None, versions=None):
     styles = ['fonts', 'site', 'components'] + (['home'] if home else []) + (['reader'] if reader else []) + (['document-font'] if document else [])
-    versions = {'reader': '?v=book-pages-1', 'home': '?v=landing-1'}
-    links = '\n'.join(f'<link rel="stylesheet" href="/assets/css/{s}.css{versions.get(s, "")}">' for s in styles)
+    versions = versions or {}
+    links = '\n'.join(f'<link rel="stylesheet" href="/assets/css/{s}.css?v={versions.get(s, "1")}">' for s in styles)
+    social = (item.get('socialImage') or SOCIAL_FALLBACK) if item else SOCIAL_FALLBACK
+    context = context or {'content_type': 'home' if home else 'installment' if reader else 'archive' if url.startswith('/archive/') else 'story' if url=='/story/' else 'chapter' if url.startswith('/story/') else 'privacy' if url=='/privacy/' else 'about'}
+    crumbs = crumbs if crumbs is not None else ([] if home else [('KATAMISKY','/'),(title,url)])
+    config = {'analytics':analytics or {'enabled':False,'measurementId':''},'canonical':BASE+url,'context':context}
+    consent = '''<aside class="container notice" aria-labelledby="analytics-choice-title" data-analytics-consent hidden><h2 id="analytics-choice-title">Optional analytics</h2><p>May KATAMISKY use Google Analytics to measure visits and reading navigation? It uses cookies and sends usage and device information to Google. The story works without it.</p><div class="actions"><button class="button secondary" type="button" data-analytics-choice="denied">Decline analytics</button><button class="button secondary" type="button" data-analytics-choice="granted">Allow analytics</button><a href="/privacy/#analytics">Privacy and choices</a></div></aside>''' if config['analytics']['enabled'] else ''
     nav = ''.join(f'<a href="{href}"'+(' aria-current="page"' if label == active else '')+f'>{label}</a>' for label, href in [('Story','/story/'),('Chapters','/story/#chapters-title'),('Archive','/archive/'),('About','/about.html')])
     return f'''<!DOCTYPE html>
 <html lang="en"><head>
@@ -50,19 +75,27 @@ def layout(title, description, url, body, active='', reader=False, document=Fals
 <meta name="theme-color" content="#f8f5f1"><link rel="canonical" href="{BASE}{e(url)}">
 <meta property="og:title" content="{e(title)} | KATAMISKY"><meta property="og:description" content="{e(description)}">
 <meta property="og:type" content="{'article' if reader else 'website'}"><meta property="og:url" content="{BASE}{e(url)}">
+<meta property="og:site_name" content="KATAMISKY"><meta property="og:locale" content="en_US">
+<meta property="og:image" content="{BASE}{e(social['path'])}"><meta property="og:image:alt" content="{e(social['alt'])}"><meta property="og:image:width" content="{social['width']}"><meta property="og:image:height" content="{social['height']}">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="{e(title)} | KATAMISKY"><meta name="twitter:description" content="{e(description)}"><meta name="twitter:image" content="{BASE}{e(social['path'])}"><meta name="twitter:image:alt" content="{e(social['alt'])}">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<script type="application/ld+json">{json_script(schemas(title, description, url, crumbs, item, social))}</script>
+<script type="application/json" id="katamisky-config">{json_script(config)}</script>
 <link rel="icon" type="image/svg+xml" href="/assets/images/site/favicon.svg">
-{links}<script type="module" src="/assets/js/continue-reading.js?v=structure-20260930"></script>
+{links}<script type="module" src="/assets/js/continue-reading.js?v={versions.get('continue-reading','1')}"></script>
+<script type="module" src="/assets/js/analytics.js?v={versions.get('analytics','1')}"></script>
 </head><body>
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="site-header"><div class="container header-inner"><a class="brand" href="/" aria-label="KATAMISKY home">KATAMISKY</a><nav class="site-nav" aria-label="Main">{nav}</nav></div></header>
 {body}
+{consent}
 <footer class="site-footer"><div class="container footer-inner"><div><a class="brand" href="/">KATAMISKY</a><p>A Serialized Illustrated Memoir</p></div><nav aria-label="Footer"><a href="/story/">Story</a><a href="/archive/">Archive</a><a href="/about.html">About</a><a href="/privacy/">Privacy</a></nav></div></footer>
 </body></html>\n'''
 
 
-def listing(group, latest_url):
+def listing(group, latest_url, start=1):
     rows = []
-    for installment_number, item in enumerate(group, 1):
+    for installment_number, item in enumerate(group, start):
         latest = ' · Latest installment' if item['url'] == latest_url else ''
         rows.append(f'<li><a href="{item["url"]}"><span class="index-number">{installment_number:02}</span><span><span class="item-title">{e(item["title"])}</span><span class="small"><time datetime="{item["date"]}">{item["date"]}</time>{latest}</span><span class="current-position" data-position="{item["url"]}" hidden>Your saved reading position</span></span><span aria-hidden="true">→</span></a></li>')
     return '<ol class="index-list">'+''.join(rows)+'</ol>'
@@ -165,6 +198,17 @@ def validate_metadata(root, chapters, entries):
             raise ValueError('Invalid prose source: use an existing HTML file inside content/')
         if source in sources: raise ValueError('Each installment needs its own source file')
         sources.add(source)
+        if item.get('dateModified'):
+            try:
+                modified = date.fromisoformat(item['dateModified'])
+                if modified < parsed or modified > date.today(): raise ValueError()
+            except (TypeError, ValueError): raise ValueError('dateModified must be a real date between publication and today')
+        if item.get('socialImage') is not None:
+            image = item['socialImage']
+            if not isinstance(image, dict) or not isinstance(image.get('path'), str) or not re.fullmatch(r'/assets/images/[a-zA-Z0-9/_-]+\.(?:png|jpg|jpeg|webp)', image['path']) or not (root/image['path'].lstrip('/')).is_file():
+                raise ValueError('socialImage must reference an existing local raster image')
+            if not isinstance(image.get('alt'), str) or not image['alt'].strip() or any(type(image.get(k)) is not int or image[k] <= 0 for k in ('width','height')):
+                raise ValueError('socialImage needs supplied alt text and positive dimensions')
         if type(item.get('document', False)) is not bool or not isinstance(item.get('objects', []), list):
             raise ValueError('document must be boolean and objects must be an array')
         if item.get('pageNumber') is not None and (type(item['pageNumber']) is not int or item['pageNumber'] < 1):
@@ -209,6 +253,11 @@ def build(root, export=False, preview=False):
     root = root.resolve()
     chapters = read_json(root/'content/chapters.json')
     entries = read_json(root/'content/installments.json')
+    settings_path = root/'content/site-settings.json'
+    analytics = read_json(settings_path).get('analytics', {}) if settings_path.exists() else {'enabled':False,'measurementId':''}
+    if type(analytics.get('enabled')) is not bool or not isinstance(analytics.get('measurementId'), str) or (analytics['enabled'] and not re.fullmatch(r'G-[A-Z0-9]+', analytics['measurementId'])):
+        raise ValueError('Analytics needs enabled boolean and a real G- measurement ID before activation')
+    if preview: analytics = {'enabled':False,'measurementId':''}
     validate_metadata(root, chapters, entries)
     chapter_map = {c['id']: c for c in chapters}
     if len(chapter_map) != len(chapters) or 'chapter-01' not in chapter_map:
@@ -256,10 +305,24 @@ def build(root, export=False, preview=False):
     first = items[0]['url'] if items else None
     latest = items[-1]['url'] if items else None
     pages = {}
+    # Version the entire reader import chain on every publication; cached
+    # manifests must never strand returning readers on an obsolete hierarchy.
+    digest = lambda text: hashlib.sha256(text.encode()).hexdigest()[:12]
+    manifest = [{'url':i['url'],'chapter':chapter_heading(chapter_map[i['chapter']]),'installment':i['title'],'storyOrder':i['storyOrder']} for i in items]
+    manifest_js = '// Generated by scripts/build.py; published installments only.\nexport const installments = '+json.dumps(manifest,indent=2)+';\n'
+    pages['assets/js/story-manifest.js'] = manifest_js
+    progress = (root/'assets/js/reader-progress.js').read_text()
+    progress = re.sub(r"story-manifest.js\?v=[^']+", 'story-manifest.js?v='+digest(manifest_js), progress)
+    progress = re.sub(r"reader-pages.js\?v=[^']+", 'reader-pages.js?v='+digest((root/'assets/js/reader-pages.js').read_text()), progress)
+    pages['assets/js/reader-progress.js'] = progress
+    continuation = re.sub(r"reader-progress.js\?v=[^']+", 'reader-progress.js?v='+digest(progress), (root/'assets/js/continue-reading.js').read_text())
+    pages['assets/js/continue-reading.js'] = continuation
+    versions = {p.stem:digest(p.read_text()) for p in (root/'assets/css').glob('*.css')}
+    versions.update({'continue-reading':digest(continuation),'analytics':digest((root/'assets/js/analytics.js').read_text())})
     def page(path, *args, **kwargs):
-        pages[path] = layout(*args, **kwargs)
+        pages[path] = layout(*args, analytics=analytics, versions=versions, **kwargs)
     def begin():
-        return f'<a class="button" href="{first}">Begin the Story →</a>' if first else '<p class="lead forthcoming">Henry’s story begins here soon.</p>'
+        return f'<a class="button" href="{first}" data-measure="begin_story">Begin the Story →</a>' if first else '<p class="lead forthcoming">Henry’s story begins here soon.</p>'
     opening_chapter = chapter_map[items[0]['chapter']] if items else chapters[0]
     # Draw the title and excerpt directly from approved, published material.
     # The manuscript itself and its paragraph boundaries remain untouched.
@@ -286,7 +349,7 @@ def build(root, export=False, preview=False):
         group = [i for i in items if i['chapter']==c['id']]
         title = c.get('title') or 'Chapter '+c['number']
         body = f'''<main id="main" tabindex="-1" class="container"><header class="page-heading"><p class="eyebrow">{e(chapter_label(c))}</p><h1>{e(title)}</h1><p class="lead">{installment_count(group) if group else 'This chapter has not yet been published.'}</p>{'<p>The chapter title and first installment will appear when they are ready.</p>' if not c.get('title') else ''}<a href="/story/">← All chapters</a></header>{resume()}{'<section><h2>Installments</h2>'+listing(group, latest)+'</section>' if group else '<p>No installments are available yet.</p>'}<p><a class="button secondary" href="/archive/">Explore the archive →</a></p></main>'''
-        page(f'story/{c["id"]}/index.html',chapter_heading(c),chapter_heading(c)+' of Henry’s serialized illustrated memoir.',f'/story/{c["id"]}/',body,'Chapters')
+        page(f'story/{c["id"]}/index.html',chapter_heading(c),chapter_heading(c)+' of Henry’s serialized illustrated memoir.',f'/story/{c["id"]}/',body,'Chapters', crumbs=[('KATAMISKY','/'),('Story','/story/'),(chapter_heading(c),f'/story/{c["id"]}/')], context={'content_type':'chapter','chapter_id':c['id'],'section':c.get('kind','chapter')})
     template = (root/'templates/story-installment.html').read_text()
     for n,item in enumerate(items):
         c = chapter_map[item['chapter']]
@@ -295,23 +358,43 @@ def build(root, export=False, preview=False):
         # Editorial comments remain in the excluded source, not the visitor document.
         markup = re.sub(r'<!--.*?-->','',template,flags=re.S)
         markup = re.sub(r'\{\{([A-Z_]+)\}\}',lambda m:values[m[1]],markup)
-        page(item['url'].lstrip('/')+'index.html',item['title']+' — '+chapter_label(c),item['description'],item['url'],markup,reader=True,document=item.get('document',False))
-    archive = '<main id="main" tabindex="-1" class="container"><header class="page-heading"><p class="eyebrow">KATAMISKY</p><h1>The archive</h1><p class="lead">'+('Published installments, organized by chapter.' if items else 'The archive will grow with Henry’s story.')+'</p></header>'
-    for c in chapters:
-        group = [i for i in items if i['chapter']==c['id']]
-        if group:
-            archive += f'<section><h2>{e(chapter_heading(c))}</h2><p class="small">{installment_count(group)}</p>'+listing(group,latest)+'</section>'
-    if not items:
-        archive += '<p>No memoir installments have been published yet.</p>'
-    archive += '<p><a class="button secondary" href="/story/">Return to the story →</a></p></main>'
-    page('archive/index.html','Archive','Browse published KATAMISKY installments by chapter and publication date.','/archive/',archive,'Archive')
-    about = '''<main id="main" tabindex="-1" class="container"><header class="page-heading"><p class="eyebrow">About KATAMISKY</p><h1>A Serialized<br>Illustrated Memoir</h1><p class="lead">The permanent digital home of Henry’s story.</p></header><div class="prose"><p>KATAMISKY is a long-form memoir, published in installments. The writing comes first, supported by original illustrations and clearly identified archival material.</p><h2>A living digital book</h2><p>Chapters and installments will remain accessible as the story grows. Each installment will have its own permanent address, and readers can save their place in their own browser without an account.</p><h2>Illustrations and archival material</h2><p>Artistic reconstructions will be labeled separately from authentic photographs and documents. Sources and dates will appear only when known.</p><h2>Related objects</h2><p>Objects directly connected to a memory may appear after an installment. Any commercial links will be separate from the memoir and clearly disclosed.</p><h2>Contact</h2><p><a href="mailto:hello@katamisky.com">hello@katamisky.com</a></p><p><a href="/story/">Explore the Story →</a></p></div></main>'''
+        markup = markup.replace('rel="prev"', 'rel="prev" data-measure="previous_installment"').replace('rel="next"', 'rel="next" data-measure="next_installment"')
+        page(item['url'].lstrip('/')+'index.html',item['title']+' — '+chapter_label(c),item['description'],item['url'],markup,reader=True,document=item.get('document',False),item=item,crumbs=[('KATAMISKY','/'),('Story','/story/'),(chapter_heading(c),f'/story/{c["id"]}/'),(item['title'],item['url'])],context={'content_type':'installment','installment_id':item['id'],'chapter_id':c['id'],'section':c.get('kind','chapter')})
+    archive_urls = []
+    archive_chunks = [items[n:n+ARCHIVE_PAGE_SIZE] for n in range(0,len(items),ARCHIVE_PAGE_SIZE)] or [[]]
+    for page_number, chunk in enumerate(archive_chunks, 1):
+        archive_url = '/archive/' if page_number == 1 else f'/archive/page/{page_number}/'
+        archive_urls.append(archive_url)
+        title = 'Archive' if page_number == 1 else f'Archive — Page {page_number}'
+        archive = '<main id="main" tabindex="-1" class="container"><header class="page-heading"><p class="eyebrow">KATAMISKY</p><h1>The archive</h1><p class="lead">'+('Published installments, organized by chapter.' if items else 'The archive will grow with Henry’s story.')+'</p></header>'
+        for c in chapters:
+            full_group = [i for i in items if i['chapter']==c['id']]
+            group = [i for i in chunk if i['chapter']==c['id']]
+            if group:
+                archive += f'<section><h2>{e(chapter_heading(c))}</h2><p class="small">{installment_count(full_group)}</p>'+listing(group,latest,full_group.index(group[0])+1)+'</section>'
+        if not items: archive += '<p>No memoir installments have been published yet.</p>'
+        if len(archive_chunks) > 1:
+            archive += '<nav class="actions" aria-label="Archive pages">'
+            if page_number > 1:
+                previous = '/archive/' if page_number == 2 else f'/archive/page/{page_number-1}/'
+                archive += f'<a class="button secondary" rel="prev" href="{previous}">← Previous archive page</a>'
+            archive += f'<span>Page {page_number} of {len(archive_chunks)}</span>'
+            if page_number < len(archive_chunks): archive += f'<a class="button secondary" rel="next" href="/archive/page/{page_number+1}/">Next archive page →</a>'
+            archive += '</nav>'
+        archive += '<p><a class="button secondary" href="/story/">Return to the story →</a></p></main>'
+        description = 'Browse published KATAMISKY installments by chapter and publication date.' + (f' Archive page {page_number}.' if page_number > 1 else '')
+        page(archive_url.lstrip('/')+'index.html',title,description,archive_url,archive,'Archive')
+    about = '''<main id="main" tabindex="-1" class="container"><header class="page-heading"><p class="eyebrow">About KATAMISKY</p><h1 id="author">A Serialized<br>Illustrated Memoir</h1><p class="lead">The permanent digital home of Henry’s story.</p></header><div class="prose"><p>KATAMISKY is a long-form memoir, published in installments. The writing comes first, supported by original illustrations and clearly identified archival material.</p><h2>A living digital book</h2><p>Chapters and installments will remain accessible as the story grows. Each installment will have its own permanent address, and readers can save their place in their own browser without an account.</p><h2>Illustrations and archival material</h2><p>Artistic reconstructions will be labeled separately from authentic photographs and documents. Sources and dates will appear only when known.</p><h2>Related objects</h2><p>Objects directly connected to a memory may appear after an installment. Any commercial links will be separate from the memoir and clearly disclosed.</p><h2>Contact</h2><p><a href="mailto:hello@katamisky.com">hello@katamisky.com</a></p><p><a href="/story/">Explore the Story →</a></p></div></main>'''
     page('about.html','About','About KATAMISKY, the permanent digital home of Henry’s serialized illustrated memoir.','/about.html',about,'About')
-    privacy = '''<main id="main" tabindex="-1" class="container"><header class="page-heading"><p class="eyebrow">Reader privacy</p><h1>Your reading place<br>stays in your browser.</h1></header><div class="prose"><h2>Reading position</h2><p>When installments are available, this site can save the current installment address, title, order, approximate reading position, and save time in your browser using <code>katamisky_reader_progress</code>. This reading history is not sent to a server. Clearing this site’s browser data removes it.</p><p>No account is required. If local storage is unavailable, the text and navigation still work.</p><h2>Email updates</h2><p>No newsletter service is connected and this site does not collect email addresses through a signup form. This notice will be updated before an email service is enabled.</p><h2>Site resources</h2><p>Fonts, styles, and scripts are served with the site. No analytics, advertising scripts, or social feeds have been added. GitHub Pages processes requests to deliver the site under its own privacy practices.</p><h2>External links</h2><p>External services have their own privacy practices. Any future affiliate links will be disclosed separately from the story.</p></div></main>'''
+    privacy = '''<main id="main" tabindex="-1" class="container"><header class="page-heading"><p class="eyebrow">Reader privacy</p><h1>Your reading place<br>stays in your browser.</h1></header><div class="prose"><h2>Reading position</h2><p>When installments are available, this site can save the current installment address, title, order, approximate reading position, and save time in your browser using <code>katamisky_reader_progress</code>. This reading history is not sent to a server. Clearing this site’s browser data removes it.</p><p>No account is required. If local storage is unavailable, the text and navigation still work.</p><h2>Email updates</h2><p>No newsletter service is connected and this site does not collect email addresses through a signup form. This notice will be updated before an email service is enabled.</p><h2>Site resources</h2><p>Fonts, styles, and scripts are served with the site. No advertising scripts or social feeds are used. Optional analytics is described below. GitHub Pages processes requests to deliver the site under its own privacy practices.</p><h2>External links</h2><p>External services have their own privacy practices. Any future affiliate links will be disclosed separately from the story.</p></div></main>'''
+    analytics_notice = '<h2 id="analytics">Optional analytics</h2>'
+    if analytics['enabled']:
+        analytics_notice += '<p>Google Analytics 4 loads only after you choose to allow it. It measures visits, installment navigation, and estimates of reading progress using cookies and usage and device information sent to Google. It does not receive manuscript text, your saved reading bookmark, names, email addresses, or form entries from this site. We do not enable advertising personalization, session recording, or fingerprinting.</p><p>Your choice is kept in this browser for up to 180 days under <code>katamisky_analytics_consent</code>. Analytics cookies last up to 180 days. Milestone event flags remain in session storage for this browser tab to prevent repeat events. These estimates cannot prove that a person read or understood the text.</p><p>Declining leaves the story and saved reading position available. You can change your choice here. Withdrawing stops new measurement and removes this site’s analytics cookies; it cannot undo data already received by Google.</p><p data-analytics-status>Choose whether to allow optional analytics in this browser.</p><div class="actions"><button type="button" class="button secondary" data-analytics-choice="denied">Decline analytics</button><button type="button" class="button secondary" data-analytics-choice="granted">Allow analytics</button></div>'
+    else:
+        analytics_notice += '<p>Optional Google Analytics support is prepared but disabled. No Google Analytics tag loads and no analytics events are sent. If it is enabled in the future, readers will be offered a choice before measurement starts.</p>'
+    privacy = privacy.replace('<h2>External links</h2>',analytics_notice+'<h2>External links</h2>')
     page('privacy/index.html','Reader Privacy','How KATAMISKY saves reading progress in your browser and handles site resources.','/privacy/',privacy)
-    manifest = [{'url':i['url'],'chapter':chapter_heading(chapter_map[i['chapter']]),'installment':i['title'],'storyOrder':i['storyOrder']} for i in items]
-    pages['assets/js/story-manifest.js'] = '// Generated by scripts/build.py; published installments only.\nexport const installments = '+json.dumps(manifest,indent=2)+';\n'
-    site_urls = ['/', '/story/', '/story/chapter-01/', '/archive/', '/about.html', '/privacy/'] + [f'/story/{c["id"]}/' for c in chapters if c['id']!='chapter-01'] + [i['url'] for i in items]
+    site_urls = ['/', '/story/', '/story/chapter-01/', '/about.html', '/privacy/'] + archive_urls + [f'/story/{c["id"]}/' for c in chapters if c['id']!='chapter-01'] + [i['url'] for i in items]
     pages['sitemap.xml'] = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+''.join('<url><loc>'+BASE+u+'</loc></url>' for u in site_urls)+'</urlset>\n'
     pages['robots.txt'] = 'User-agent: *\nAllow: /\nSitemap: '+BASE+'/sitemap.xml\n'
     if preview:
