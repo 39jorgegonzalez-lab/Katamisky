@@ -48,13 +48,31 @@ The public Measurement ID is not an API secret. No second implementation or
 Google Tag Manager container is installed. Keep Google signals, advertising
 personalization and user-provided data collection off in the Google property.
 
-Actual Google receipt remains unverified until observed in the property.
-The connected reporting service currently returns `payment_required`.
-The production browser tooling exposes DOM and console checks, but no passive
-network/cookie inspection. Do not substitute local mocked tests or a script
-element in the DOM for actual Google delivery/receipt evidence.
+**GA4 ACTIVATION — COMPLETE**
 
-Owner verification:
+Owner production verification accepted on 2026-10-01 (America/Bogota), following
+deployment of activation commit `15f149f4ca84b706ae9607f6f7922185d30cf4d3`.
+The owner confirmed:
+
+- Before consent: no `gtag.js` request, no Google Analytics `collect` request,
+  and no `_ga` cookies. Declining preserved this no-collection state.
+- After Allow analytics: `gtag.js` loaded with HTTP 200, a `collect` request
+  completed with HTTP 204, and `_ga` and `_ga_7ZGG7KGK9H` cookies were created.
+- Actual production receipt in Google Analytics Realtime: 1 active user,
+  1 view, and `/privacy/`.
+- After withdrawal through Decline analytics: the `_ga` cookies disappeared.
+  After clearing the Network log and navigating to `/story/`, no new `collect`
+  or `gtag` requests occurred. The site remained functional.
+
+This is owner-observed production evidence, not a claim of direct agent access
+to GA4. It satisfies the previously pending owner-verification requirement.
+The prior complete build, 23 analytics checks, production DOM/navigation checks,
+and verification of all 215 locked manuscript paragraphs remain accepted.
+Realtime receipt of individual navigation and reading-milestone events is not
+separately asserted by this owner confirmation; their existing local test
+results remain the recorded evidence. This closure changes documentation only.
+
+Future regression reference (not an outstanding activation requirement):
 1. In a fresh private browser window, open developer tools before loading the
    production site. In Network enable Preserve log and filter Google tag and
    Analytics requests. Before consent, and after Decline, expect no Google tag
