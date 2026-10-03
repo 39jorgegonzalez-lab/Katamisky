@@ -43,7 +43,7 @@ for path in files:
     descriptions.append(html.unescape(re.search(r'<meta name="description" content="([^"]+)">',text)[1]))
 assert len(set(descriptions)) == len(files)
 assert (public/'robots.txt').read_text() == 'User-agent: *\nAllow: /\nSitemap: https://www.katamisky.com/sitemap.xml\n'
-locks = {'i-have-been-angry':(78,'dad8723ab5b0346e9b2098816752f293912e54389c5f75b699e752c6744d8b04'), 'before-there-was-me':(137,'cf2861d10b5a7a560d55da0339d6d07f92e4ec8b256f171b4696b1151e2efe52')}
+locks = {'what-they-left-behind':(108,'29ec2b7a64e8e64133e6b1f26611c862b3ab80067342a77484fcaf3dca0bc38d'), 'i-have-been-angry':(78,'dad8723ab5b0346e9b2098816752f293912e54389c5f75b699e752c6744d8b04'), 'before-there-was-me':(137,'cf2861d10b5a7a560d55da0339d6d07f92e4ec8b256f171b4696b1151e2efe52')}
 for slug,(count,digest) in locks.items():
     source = (ROOT/f'content/{slug}.html').read_text()
     rendered = (public/f'story/chapter-01/{slug}/index.html').read_text().split('<div class="story-body" id="story-pages">',1)[1].split('<footer',1)[0]
@@ -57,7 +57,7 @@ assert '"chapter_id":"prologue"' in angry and '"chapter_id":"chapter-01"' in bef
 assert 'data-measure="next_installment"' in angry and 'data-measure="previous_installment"' in before
 assert 'data-measure="begin_story"' in (public/'index.html').read_text()
 assert 'data-measure="continue_reading"' in (public/'archive/index.html').read_text() or 'data-measure="continue_reading"' in (public/'story/index.html').read_text()
-print('PASS: all 9 public pages: SEO, schema syntax/relationships, unique metadata, image fallback, consent-gated analytics configuration, 215 locked paragraphs and hierarchy.')
+print('PASS: all 10 public pages: SEO, schema syntax/relationships, unique metadata, image fallback, consent-gated analytics configuration, 323 locked paragraphs and hierarchy.')
 
 with tempfile.TemporaryDirectory(prefix='katamisky-scale-') as directory:
     root=Path(directory)

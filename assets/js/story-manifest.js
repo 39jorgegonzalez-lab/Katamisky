@@ -11,5 +11,11 @@ export const installments = [
     "chapter": "Chapter 1 \u2014 Before Me",
     "installment": "Before there was me, there was already a story.",
     "storyOrder": 2
+  },
+  {
+    "url": "/story/chapter-01/what-they-left-behind/",
+    "chapter": "Chapter 1 \u2014 Before Me",
+    "installment": "What They Left Behind",
+    "storyOrder": 3
   }
 ];

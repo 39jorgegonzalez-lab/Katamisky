@@ -1,4 +1,4 @@
-import { installments } from './story-manifest.js?v=4682e0105ecd';
+import { installments } from './story-manifest.js?v=c067e68ba810';
 import { createPageReader } from './reader-pages.js?v=f94f2f526f71';
 
 export const STORAGE_KEY = 'katamisky_reader_progress';

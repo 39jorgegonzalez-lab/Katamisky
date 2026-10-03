@@ -10,7 +10,12 @@
     "status": "published",
     "authorApproved": true,
     "source": "i-have-been-angry.html",
-    "pageBreaks": [18, 29, 46, 64],
+    "pageBreaks": [
+      18,
+      29,
+      46,
+      64
+    ],
     "document": false,
     "objects": []
   },
@@ -24,7 +29,36 @@
     "status": "published",
     "authorApproved": true,
     "source": "before-there-was-me.html",
-    "pageBreaks": [12, 29, 41, 57, 81, 99, 115],
+    "pageBreaks": [
+      12,
+      29,
+      41,
+      57,
+      81,
+      99,
+      115
+    ],
+    "document": false,
+    "objects": []
+  },
+  {
+    "id": "what-they-left-behind",
+    "chapter": "chapter-01",
+    "title": "What They Left Behind",
+    "description": "What They Left Behind",
+    "date": "2026-10-02",
+    "pageNumber": null,
+    "status": "published",
+    "authorApproved": true,
+    "source": "what-they-left-behind.html",
+    "pageBreaks": [
+      14,
+      21,
+      41,
+      56,
+      76,
+      94
+    ],
     "document": false,
     "objects": []
   }
