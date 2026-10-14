@@ -1,5 +1,5 @@
 import { installments } from './story-manifest.js?v=c067e68ba810';
-import { createPageReader } from './reader-pages.js?v=f94f2f526f71';
+import { createPageReader } from './reader-pages.js?v=41952b9f54cc';
 
 export const STORAGE_KEY = 'katamisky_reader_progress';
 const byURL = new Map(installments.map(item => [item.url, item]));

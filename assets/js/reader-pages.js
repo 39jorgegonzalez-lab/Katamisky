@@ -2,7 +2,8 @@
 export function createPageReader(story, onTurn) {
   const pages = [...story.querySelectorAll(':scope > .book-page')];
   const navigation = document.querySelector('[data-page-navigation]');
-  if (pages.length < 2 || !navigation) return null;
+  if (!pages.length || !navigation) return null;
+  const bookNumber = index => Number(pages[index].dataset.bookPage) || index + 1;
   const previous = navigation.querySelector('[data-page-previous]');
   const next = navigation.querySelector('[data-page-next]');
   const label = navigation.querySelector('[data-page-label]');
@@ -20,12 +21,12 @@ export function createPageReader(story, onTurn) {
     current = target;
     pages.forEach((page, i) => { page.hidden = i !== current; });
     previous.disabled = current === 0;
-    previous.textContent = current === 0 ? '←' : `← ${current}`;
-    previous.setAttribute('aria-label', current === 0 ? 'No previous page' : `Previous page, page ${current}`);
+    previous.textContent = current === 0 ? '←' : `← ${bookNumber(current - 1)}`;
+    previous.setAttribute('aria-label', current === 0 ? 'No previous page' : `Previous page, page ${bookNumber(current - 1)}`);
     next.disabled = current === pages.length - 1;
-    next.textContent = next.disabled ? '→' : `${current + 2} →`;
-    next.setAttribute('aria-label', next.disabled ? 'No next page' : `Next page, page ${current + 2}`);
-    label.textContent = `Page ${current + 1} of ${pages.length}`;
+    next.textContent = next.disabled ? '→' : `${bookNumber(current + 1)} →`;
+    next.setAttribute('aria-label', next.disabled ? 'No next page' : `Next page, page ${bookNumber(current + 1)}`);
+    label.textContent = `Page ${bookNumber(current)}`;
     if (end) end.hidden = current !== pages.length - 1;
     if (writeHash) history.replaceState(null, '', `#page-${current + 1}`);
     if (interactive && changed) {

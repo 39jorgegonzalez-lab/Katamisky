@@ -44,6 +44,16 @@ for path in files:
 assert len(set(descriptions)) == len(files)
 assert (public/'robots.txt').read_text() == 'User-agent: *\nAllow: /\nSitemap: https://www.katamisky.com/sitemap.xml\n'
 locks = {'what-they-left-behind':(108,'29ec2b7a64e8e64133e6b1f26611c862b3ab80067342a77484fcaf3dca0bc38d'), 'i-have-been-angry':(78,'dad8723ab5b0346e9b2098816752f293912e54389c5f75b699e752c6744d8b04'), 'before-there-was-me':(137,'cf2861d10b5a7a560d55da0339d6d07f92e4ec8b256f171b4696b1151e2efe52')}
+sequence=[]
+for slug,first,last in [('i-have-been-angry',1,5),('before-there-was-me',6,13),('what-they-left-behind',14,20)]:
+    text=(public/f'story/chapter-01/{slug}/index.html').read_text()
+    numbers=[int(n) for n in re.findall(r'data-book-page="(\d+)"',text)]
+    assert numbers==list(range(first,last+1))
+    assert f'Pages {first}–{last}' in text
+    assert [int(n) for n in re.findall(r'class="book-page" id="page-(\d+)"',text)]==list(range(1,last-first+2))
+    sequence+=numbers
+assert sequence==list(range(1,21))
+print('PASS: book pages 1–20 continuous across Prologue and Chapter 1; local fragment IDs preserved.')
 for slug,(count,digest) in locks.items():
     source = (ROOT/f'content/{slug}.html').read_text()
     rendered = (public/f'story/chapter-01/{slug}/index.html').read_text().split('<div class="story-body" id="story-pages">',1)[1].split('<footer',1)[0]

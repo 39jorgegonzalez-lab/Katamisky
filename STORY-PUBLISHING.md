@@ -165,3 +165,33 @@ code change, not deleting a registry entry. Old bookmarks must keep working.
 Known original production rollback: `2e0a704846235f6724a1b4045a96303b185ac85f`.
 Record current remote HEAD before every release. Revert through a normal reviewed commit;
 never force-push over later work. Keep CNAME exactly `www.katamisky.com`.
+
+## Permanent book structure and continuous pages
+
+KATAMISKY is organized as BOOK → CHAPTER → TITLED INSTALLMENT → CONTINUOUS
+STORY PAGES. Prologue remains separate from the numbered chapters; Chapter 1 —
+Before Me begins the chronological memoir. Installment titles are approved prose
+metadata, not interchangeable with chapter titles. The existing chapter/title
+presentation and subtle installment numbering remain in use.
+
+`pageBreaks` defines editorial paragraph boundaries, not viewport-sized screens.
+An installment has `len(pageBreaks) + 1` pages. Use an empty array for one finalized
+page. Length is flexible; never pad, truncate, or split paragraphs to hit a quota.
+Once a book uses finalized pages, the build rejects published installments with
+missing page boundaries, rather than inventing a count. Legacy all-unpaginated
+fixtures remain supported without assigning book-page numbers.
+
+The builder traverses published installments in chapter/reading order, including
+Prologue, and derives each page's `data-book-page` plus its installment's displayed
+range. It starts at 1 and carries the counter across every installment and chapter.
+No manually maintained offsets or page-number fields are needed. Appending an
+installment automatically continues the sequence. Reordering earlier installments
+or changing their finalized page boundaries renumbers later pages and needs
+explicit editorial review; routine publication should append in reading order.
+
+Canonical URLs and `#page-N` fragments retain their existing meanings: N is the
+local page position within that installment, even when the visible book number
+is different. Fragments are not indexable page documents. Saved reading fractions,
+URLs, and story order remain unchanged, so existing Continue Reading positions
+need no migration. Page controls turn within the installment; the existing
+Previous/Next installment links cross installment boundaries.

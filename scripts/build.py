@@ -134,7 +134,7 @@ def read_json(path):
         raise ValueError(f"Cannot read {path.name}: {error}") from error
 
 
-def book_pages(prose, breaks):
+def book_pages(prose, breaks, first_page=1):
     """Wrap complete paragraphs in numbered pages without altering their markup."""
     if breaks is None:
         return prose
@@ -147,8 +147,9 @@ def book_pages(prose, breaks):
     boundaries = [0, *breaks, len(paragraphs)]
     pages = []
     for index, (start, end) in enumerate(zip(boundaries, boundaries[1:]), 1):
-        label = f'Page {index} of {len(boundaries) - 1}'
-        pages.append(f'<div class="book-page" id="page-{index}" role="group" aria-label="{label}" tabindex="-1">\n' + '\n'.join(paragraphs[start:end]) + '\n</div>')
+        number = first_page + index - 1
+        label = f'Page {number}'
+        pages.append(f'<div class="book-page" id="page-{index}" data-book-page="{number}" role="group" aria-label="{label}" tabindex="-1">\n' + '\n'.join(paragraphs[start:end]) + '\n</div>')
     return '\n'.join(pages)
 
 
@@ -269,6 +270,11 @@ def build(root, export=False, preview=False):
         raise ValueError('Only draft and published statuses are supported; no public development installments')
     chapter_order = {c['id']: n for n, c in enumerate(chapters)}
     items = sorted([dict(i) for i in entries if i['status'] == 'published'], key=lambda i: chapter_order[i['chapter']])
+    # Number finalized editorial pages in book order, including the Prologue.
+    # Never estimate missing page boundaries or reset at a chapter boundary.
+    if any(i.get('pageBreaks') is not None for i in items) and any(i.get('pageBreaks') is None for i in items):
+        raise ValueError('Continuous book numbering requires finalized pageBreaks for every published installment; use [] for one editorial page')
+    next_book_page = 1
     urls = set()
     for order, item in enumerate(items, 1):
         if not SLUG.fullmatch(item['id']) or item['chapter'] not in chapter_map:
@@ -289,7 +295,12 @@ def build(root, export=False, preview=False):
             raise ValueError('Memoir source must be semantic text/images, without embedded executable content')
         if 'document-text' in prose and not item.get('document'):
             raise ValueError('Document transcription requires document: true')
-        item['prose'] = book_pages(prose, item.get('pageBreaks'))
+        item['pageStart'] = next_book_page if item.get('pageBreaks') is not None else None
+        item['prose'] = book_pages(prose, item.get('pageBreaks'), next_book_page)
+        item['pageCount'] = len(item['pageBreaks']) + 1 if item.get('pageBreaks') is not None else None
+        item['pageEnd'] = next_book_page + item['pageCount'] - 1 if item['pageCount'] is not None else None
+        if item['pageCount'] is not None:
+            next_book_page += item['pageCount']
         item['url'] = installment_url(item)
         if item['url'] in urls:
             raise ValueError('Duplicate permanent URL')
@@ -355,6 +366,8 @@ def build(root, export=False, preview=False):
         c = chapter_map[item['chapter']]
         values = {'CHAPTER_URL':f'/story/{c["id"]}/','CHAPTER_NUMBER':e(c['number']),'CHAPTER_TITLE':e(c['title']),'INSTALLMENT_NUMBER':str(n+1),'TITLE':e(item['title']),'DATE':e(item['date']),'DATE_LABEL':e(item['date']),'PAGE_NUMBER': ' · Page '+e(item['pageNumber']) if item.get('pageNumber') is not None else '', 'MEMOIR_TEXT':item['prose'], 'END_STATE': '<p class="small">You’re caught up with Henry’s story.</p>' if item['url']==latest else '', 'PREVIOUS':f'<a href="{items[n-1]["url"]}" rel="prev">← Previous</a>' if n else '<span></span>', 'NEXT':f'<a class="next" href="{items[n+1]["url"]}" rel="next" data-next>Next →</a>' if n+1<len(items) else '<span></span>', 'OBJECTS':object_module(item), 'EMAIL_MODULE':''}
         values.update(CHAPTER_LABEL=e(chapter_label(c)), INDEX_LABEL='Prologue Index' if c.get('kind') == 'prologue' else 'Chapter Index', INSTALLMENT_NUMBER=str(sum(i['chapter'] == item['chapter'] for i in items[:n+1])))
+        # Published ranges are derived; the old manual pageNumber field cannot override them.
+        values['PAGE_NUMBER'] = (f' · Pages {item["pageStart"]}–{item["pageEnd"]}' if item['pageCount'] > 1 else f' · Page {item["pageStart"]}') if item['pageCount'] is not None else ''
         # Editorial comments remain in the excluded source, not the visitor document.
         markup = re.sub(r'<!--.*?-->','',template,flags=re.S)
         markup = re.sub(r'\{\{([A-Z_]+)\}\}',lambda m:values[m[1]],markup)

@@ -10,4 +10,6 @@ for command in commands:
     if result.returncode: sys.exit(result.returncode)
 result = subprocess.run(['node', 'tests/analytics.mjs'], cwd=root)
 if result.returncode: sys.exit(result.returncode)
+result = subprocess.run(['node', 'tests/book-pages.mjs'], cwd=root)
+if result.returncode: sys.exit(result.returncode)
 print('Verification passed. Browser/mobile review and post-deployment live checks remain separate; GA4 receipt requires a real property.')
