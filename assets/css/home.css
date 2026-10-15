@@ -70,3 +70,27 @@
  .home-excerpt {padding:0 0 0 1.5rem}
  .home-excerpt blockquote {font-size:1.65rem}
 }
+
+/* Childhood scene, softened beneath the existing paper and book presentation. */
+.home-hero {
+ background-color:#f4ebdc;
+ background-image:linear-gradient(100deg,rgba(244,235,220,.86) 0%,rgba(244,235,220,.74) 48%,rgba(244,235,220,.52) 100%),url(/assets/images/site/childhood-background.png);
+ background-size:cover;
+ background-position:center;
+ background-repeat:no-repeat;
+}
+@media (max-width:600px) {
+ .home-hero {
+  background-image:linear-gradient(to bottom,rgba(244,235,220,.64),rgba(244,235,220,.86) 250px,#f4ebdc 440px),url(/assets/images/site/childhood-background.png);
+  background-size:100% 100%,100% auto;
+  background-position:center top;
+ }
+}
+
+/* Smaller book, lowered and drawn inward toward the center of the opening. */
+.home-book {transform:translate(calc(-35% - 96px),136px) scale(.5) rotate(3deg);transform-origin:center}
+.home-book-scene::before {inset:45% 15% 0 -20%;opacity:.45}
+@media (max-width:600px) {
+ .home-book {transform:translate(-96px,120px) scale(.5) rotate(2deg)}
+ .home-book-scene::before {inset:45% 20% 0;opacity:.45}
+}
