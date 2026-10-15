@@ -94,3 +94,5 @@
  .home-book {transform:translate(-96px,120px) scale(.5) rotate(2deg)}
  .home-book-scene::before {inset:45% 20% 0;opacity:.45}
 }
+
+.home-book-title {text-align:center}

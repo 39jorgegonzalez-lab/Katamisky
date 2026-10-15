@@ -69,7 +69,7 @@ function start(config) {
   function gtag() { window.dataLayer.push(arguments); }
   const common = {
     page_location: config.canonical,
-    page_title: `KATAMISKY | ${context.content_type} | ${context.installment_id || context.chapter_id || ''}`,
+    page_title: `KATAMI SKY | ${context.content_type} | ${context.installment_id || context.chapter_id || ''}`,
     // Deliberately omit referrer paths, queries, titles and user-supplied text.
     page_referrer: '',
     send_to: id
