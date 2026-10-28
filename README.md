@@ -44,7 +44,7 @@ Reading position stays in localStorage under `katamisky_reader_progress`. Option
 uses `G-7ZGG7KGK9H` and loads only after affirmative analytics consent on the canonical
 production origin. Decline and withdrawal remain available on the Privacy page.
 Google receipt and cookie withdrawal were previously owner-verified; see the current
-[audit record](docs/V1-AUDIT-2026-10-28.md) for what was freshly tested and what remains pending.
+[audit record](docs/V1-AUDIT-2026-10-28.md) for verified results and the completed Version 1 closure.
 No newsletter service, signup form, advertising or session replay is installed.
 The existing contact email's delivery has not been independently verified.
 
