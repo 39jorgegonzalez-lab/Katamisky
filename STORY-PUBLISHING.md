@@ -12,12 +12,12 @@ committed source remains visible on GitHub, even when its status is `draft`.
 2. Edit and approve the actual text.
 3. Choose the approved title and meaningful permanent slug.
 4. Choose optional approved artwork or archival material.
-5. Add only approved publication material to KATAMISKY source.
+5. Add only approved publication material to KATAMI SKY source.
 6. Build and preview; review mobile, wording, captions and navigation.
 7. Explicitly approve publication, publish, and verify the live page.
 
 See [AUTHOR-PUBLISHING-QUICKSTART.md](AUTHOR-PUBLISHING-QUICKSTART.md) for the short checklist.
-No first installment exists yet. Neither the starter nor test fixtures are Henry’s story.
+Three installments are published. Starter files and test fixtures are not memoir content.
 
 ## Create the source safely
 
@@ -31,8 +31,8 @@ approved text, and remove every unused component. Do not use it to write sensiti
 
 The approved chapter title belongs in `content/chapters.json`. Installment metadata
 lives in `content/installments.json`; entries appear in reading order. The `id` is the
-permanent slug: `/story/chapter-01/meaningful-slug/`. Optional `pageNumber` is a positive
-integer independent of that URL. Do not use page-number URLs.
+permanent slug: `/story/chapter-01/meaningful-slug/`. Legacy `pageNumber` metadata does not control the finalized book sequence.
+Use `pageBreaks` as documented below; do not use page-number URLs.
 
 Section order is defined by `chapters.json`, with installment order preserved within
 each section. `prologue` is the unnumbered Prologue (`kind: "prologue"`, `number: ""`)
@@ -152,7 +152,7 @@ and console. Verify `/templates/story-installment.html`, `/content/installments.
 `/STORY-PUBLISHING.md`, `/AUTHOR-PUBLISHING-QUICKSTART.md` and `/README.md` return 404.
 Jekyll exclusions must be checked on the real host, not inferred from a local export.
 Ask the owner to repeat homepage/nav/fonts/margins/buttons/story/chapter/archive/no-sideways-
-scroll checks on a real phone. Repeat on the reader once a real installment exists.
+scroll checks on a real phone. Include all three published installments in reader checks.
 Do not claim deployment or live verification when a push fails.
 
 ## Permanent URLs and rollback
@@ -168,7 +168,7 @@ never force-push over later work. Keep CNAME exactly `www.katamisky.com`.
 
 ## Permanent book structure and continuous pages
 
-KATAMISKY is organized as BOOK → CHAPTER → TITLED INSTALLMENT → CONTINUOUS
+KATAMI SKY is organized as BOOK → CHAPTER → TITLED INSTALLMENT → CONTINUOUS
 STORY PAGES. Prologue remains separate from the numbered chapters; Chapter 1 —
 Before Me begins the chronological memoir. Installment titles are approved prose
 metadata, not interchangeable with chapter titles. The existing chapter/title

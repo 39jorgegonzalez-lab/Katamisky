@@ -15,4 +15,4 @@ Never put private identities, sensitive drafts, correspondence or evidence here.
 
 Use [STORY-PUBLISHING.md](STORY-PUBLISHING.md) for exact preview commands and editorial details.
 Never change a published URL. Visible page numbers are separate from permanent addresses.
-No newsletter service is connected. No real first installment has been supplied yet.
+No newsletter service is connected. Three installments are published; preserve their approved prose and permanent URLs.
