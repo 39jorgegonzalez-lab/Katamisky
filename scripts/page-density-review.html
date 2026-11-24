@@ -1,0 +1,60 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="robots" content="noindex,nofollow"><title>Private page-density review</title>
+<style>body{font:16px system-ui;margin:24px}table{border-collapse:collapse}td,th{padding:8px;border:1px solid #ccc;text-align:left}iframe{display:block;border:1px solid #aaa;margin:16px 0}pre{white-space:pre-wrap;overflow-wrap:anywhere}summary{cursor:pointer}</style>
+<h1>Private page-density review</h1><p>Target: 28–31 body lines at a 1440px desktop viewport / 680px reading width. This is an editorial window, not a quota. Preserve complete paragraphs; record literary reasons for exceptions. Mobile wraps naturally.</p>
+<p id="status">Measuring all published pages…</p><table><thead><tr><th>Installment</th><th>Book page</th><th>Body lines</th><th>Short wrap endings</th></tr></thead><tbody id="rows"></tbody></table>
+<button id="download" disabled>Download measurements</button><details><summary>Measurement JSON (copy into the density record after editorial review)</summary><pre id="result"></pre></details><div id="frames"></div>
+<script>
+const input=/*REVIEW_DATA*/;
+function paragraphMeasure(p,d){
+ const lines=new Map(),walk=d.createTreeWalker(p,NodeFilter.SHOW_TEXT);let node;
+ const lineHeight=parseFloat(d.defaultView.getComputedStyle(p).lineHeight),start=p.getBoundingClientRect().top;
+ while(node=walk.nextNode())for(const m of node.textContent.matchAll(/\S+/g)){
+  const r=d.createRange();r.setStart(node,m.index);r.setEnd(node,m.index+m[0].length);
+  const top=Math.round((r.getBoundingClientRect().top-start)/lineHeight);lines.set(top,[...(lines.get(top)||[]),m[0]]);
+ }
+ return {text:p.textContent,lines:Math.round(p.getBoundingClientRect().height/lineHeight),tail:[...lines.values()].at(-1)?.join(' '),page:Number(p.closest('.book-page').dataset.bookPage)};
+}
+// Dynamic programming proposes whole-paragraph breaks; editors choose the final pacing.
+function propose(counts){
+ const costs=[0],paths=[[]];
+ for(let end=1;end<=counts.length;end++){
+  costs[end]=Infinity;let lines=0;
+  for(let start=end-1;start>=0;start--){
+   lines+=counts[start];
+   const outside=Math.max(28-lines,lines-31,0);
+   const cost=costs[start]+outside*outside*100+Math.pow(lines-29.5,2)+1;
+   if(cost<costs[end]){costs[end]=cost;paths[end]=[...paths[start],end];}
+  }
+ }
+ return paths.at(-1).slice(0,-1);
+}
+(async()=>{
+ const report={layoutSignature:input.layoutSignature,canonicalViewport:1440,readerWidth:680,installments:{},mobile:[]};
+ for(const item of input.items){
+  const f=document.createElement('iframe');f.title=item.id;f.style='width:1440px;height:1100px';f.src=item.url;
+  document.querySelector('#frames').append(f);await new Promise(r=>f.onload=r);
+  const d=f.contentDocument;await d.fonts.ready;
+  // Test-only visibility override: production pagination is unmodified.
+  const style=d.createElement('style');style.textContent='.book-page[hidden]{display:flow-root!important}.book-page{animation:none!important}';d.head.append(style);
+  const paragraphs=[...d.querySelectorAll('.book-page p')].map(p=>paragraphMeasure(p,d));
+  const width=d.querySelector('.story-body').getBoundingClientRect().width;
+  if(width!==680)throw Error('Canonical reading width is '+width+'; do not record these counts.');
+  const counts=paragraphs.map(p=>p.lines);
+  report.installments[item.id]={sourceSHA256:item.sourceSHA256,pageBreaks:item.pageBreaks,paragraphLines:counts,proposedBreaks:propose(counts),exceptions:{},shortParagraphs:paragraphs.map((p,i)=>({...p,paragraph:i+1})).filter(p=>p.text.trim().split(/\s+/).length<=3),shortWraps:paragraphs.filter(p=>p.lines>1&&p.tail.split(/\s+/).length<=3)};
+  for(const page of [...d.querySelectorAll('.book-page')]){
+   const ps=paragraphs.filter(p=>p.page===Number(page.dataset.bookPage));
+   const tr=document.createElement('tr');
+   for(const v of [item.id,page.dataset.bookPage,ps.reduce((a,p)=>a+p.lines,0),ps.filter(p=>p.lines>1&&p.tail.split(/\s+/).length<=3).length]){const td=document.createElement('td');td.textContent=v;tr.append(td);}document.querySelector('#rows').append(tr);
+  }
+  for(const width of [320,375,390,430,768]){
+   f.style.width=width+'px';
+   report.mobile.push({id:item.id,width,overflow:d.documentElement.scrollWidth>width,pages:[...d.querySelectorAll('.book-page')].length});
+  }
+  f.style.width='1440px';
+ }
+ document.querySelector('#result').textContent=JSON.stringify(report,null,2);
+ document.querySelector('#download').disabled=false;
+ document.querySelector('#download').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(report,null,2)],{type:'application/json'}));a.download='page-density-measurements.json';a.click();URL.revokeObjectURL(a.href);};
+ document.querySelector('#status').textContent='Measurement complete. Review the page breaks for literary pacing; proposed breaks are suggestions only.';
+})().catch(e=>document.querySelector('#status').textContent='Review failed: '+e.message);
+</script></html>

@@ -4,18 +4,59 @@ export const installments = [
     "url": "/story/chapter-01/i-have-been-angry/",
     "chapter": "Prologue",
     "installment": "I have been angry for as long as I can remember.",
-    "storyOrder": 1
+    "storyOrder": 1,
+    "pageBreaks": [
+      18,
+      36,
+      56
+    ],
+    "legacyPageBreaks": [
+      18,
+      29,
+      46,
+      64
+    ]
   },
   {
     "url": "/story/chapter-01/before-there-was-me/",
     "chapter": "Chapter 1 \u2014 Before Me",
     "installment": "Before there was me, there was already a story.",
-    "storyOrder": 2
+    "storyOrder": 2,
+    "pageBreaks": [
+      15,
+      41,
+      65,
+      91,
+      113
+    ],
+    "legacyPageBreaks": [
+      12,
+      29,
+      41,
+      57,
+      81,
+      99,
+      115
+    ]
   },
   {
     "url": "/story/chapter-01/what-they-left-behind/",
     "chapter": "Chapter 1 \u2014 Before Me",
     "installment": "What They Left Behind",
-    "storyOrder": 3
+    "storyOrder": 3,
+    "pageBreaks": [
+      17,
+      38,
+      60,
+      83
+    ],
+    "legacyPageBreaks": [
+      14,
+      21,
+      41,
+      56,
+      76,
+      94
+    ]
   }
 ];

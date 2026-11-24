@@ -1,4 +1,4 @@
-import {readProgress} from './reader-progress.js?v=a21b76259e35';
+import {readProgress} from './reader-progress.js?v=7fca9c9c70c1';
 
 function update() {
   const saved = readProgress();

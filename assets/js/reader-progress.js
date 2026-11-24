@@ -1,4 +1,4 @@
-import { installments } from './story-manifest.js?v=c067e68ba810';
+import { installments } from './story-manifest.js?v=c3c6934810d8';
 import { createPageReader } from './reader-pages.js?v=41952b9f54cc';
 
 export const STORAGE_KEY = 'katamisky_reader_progress';
@@ -8,7 +8,19 @@ export function validateProgress(value) {
   if (!value || value.version !== 1 || typeof value.url !== 'string') return null;
   const item = byURL.get(value.url);
   if (!item || value.storyOrder !== item.storyOrder || typeof value.savedAt !== 'string' || !Number.isFinite(Date.parse(value.savedAt))) return null;
-  const fraction = typeof value.fraction === 'number' && Number.isFinite(value.fraction) ? Math.max(0, Math.min(1, value.fraction)) : 0;
+  let fraction = typeof value.fraction === 'number' && Number.isFinite(value.fraction) ? Math.max(0, Math.min(1, value.fraction)) : 0;
+  // Re-pagination must not skip unread prose. Older saves have only a fraction.
+  // Resume at the new page containing the old page's first paragraph; a little
+  // rereading is safer than guessing a precise paragraph from a scroll fraction.
+  const oldBreaks = Array.isArray(value.pageBreaks) ? value.pageBreaks : item.legacyPageBreaks;
+  if (Array.isArray(oldBreaks) && Array.isArray(item.pageBreaks) &&
+      oldBreaks.every((n, i) => Number.isInteger(n) && n > 0 && (!i || n > oldBreaks[i - 1])) &&
+      JSON.stringify(oldBreaks) !== JSON.stringify(item.pageBreaks)) {
+    const oldIndex = Math.min(oldBreaks.length, Math.floor(fraction * (oldBreaks.length + 1)));
+    const paragraph = oldIndex === 0 ? 0 : oldBreaks[oldIndex - 1];
+    const newIndex = item.pageBreaks.filter(n => n <= paragraph).length;
+    fraction = newIndex / (item.pageBreaks.length + 1);
+  }
   return { ...item, version: 1, savedAt: value.savedAt, fraction };
 }
 

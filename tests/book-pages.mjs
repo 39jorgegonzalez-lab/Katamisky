@@ -36,3 +36,22 @@ assert.equal(legacy.label.textContent,'Page 19');
 legacy.location.hash='#page-1';legacy.events.hashchange();assert.equal(legacy.label.textContent,'Page 14');
 assert.equal(legacy.state.count,7);
 console.log('PASS: continuous labels/arrows, single-page installment, unchanged local hashes, saved fractions, keyboard and touch state transitions (mocked DOM).');
+
+// A saved page from the previous pagination must never advance past its first paragraph.
+const manifest=JSON.parse(readFileSync(new URL('../assets/js/story-manifest.js',import.meta.url),'utf8').split('export const installments = ')[1].replace(/;\s*$/,''));
+const progressSource=readFileSync(new URL('../assets/js/reader-progress.js',import.meta.url),'utf8').split("const story = document.querySelector('.story-body');")[0].replace(/^import .*;\n/gm,'').replaceAll('export ','');
+const context={installments:manifest};vm.createContext(context);vm.runInContext(progressSource,context);
+for(const item of manifest){
+ const old=item.legacyPageBreaks;
+ for(let index=0;index<=old.length;index++){
+  const value={version:1,url:item.url,storyOrder:item.storyOrder,savedAt:'2026-10-28T12:00:00Z',fraction:(index+.8)/(old.length+1)};
+  const result=context.validateProgress(value),newIndex=Math.round(result.fraction*(item.pageBreaks.length+1));
+  const oldParagraph=index?old[index-1]:0,newParagraph=newIndex?item.pageBreaks[newIndex-1]:0;
+  assert(newParagraph<=oldParagraph,'Migration skipped unread paragraphs');
+  assert(newIndex===item.pageBreaks.length||item.pageBreaks[newIndex]>oldParagraph);
+  const unchanged=context.validateProgress({...value,pageBreaks:item.pageBreaks});
+  assert.equal(unchanged.fraction,value.fraction,'Current saved place changed');
+  const migratedAgain=context.validateProgress({...result});assert.equal(migratedAgain.fraction,result.fraction);
+ }
+}
+console.log('PASS: old saved pages migrate without skipping prose; current bookmarks and repeated restoration remain stable.');

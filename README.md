@@ -4,7 +4,7 @@ Production: https://www.katamisky.com/ · GitHub Pages · `main`, repository roo
 
 The memoir currently has three published installments: one Prologue installment
 and two installments in Chapter 1 — Before Me. The 323 approved paragraphs are
-locked by integrity checks. Finalized editorial pages run continuously from 1–20.
+locked by integrity checks. Finalized editorial pages run continuously from 1–15.
 The childhood homepage background, small repositioned book, and stacked KATAMI / SKY
 cover title are approved. Do not redesign them during routine publication.
 

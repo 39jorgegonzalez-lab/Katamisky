@@ -195,3 +195,18 @@ is different. Fragments are not indexable page documents. Saved reading fraction
 URLs, and story order remain unchanged, so existing Continue Reading positions
 need no migration. Page controls turn within the installment; the existing
 Previous/Next installment links cross installment boundaries.
+
+## Page density (all future installments)
+
+The canonical desktop format is the existing **680px text column at a 1440px viewport**, Source Serif 4 at 19.2px and 1.55 line height, default browser zoom. Target **28–31 rendered body-text lines per book page**, excluding paragraph gaps, headings and navigation. This is an editorial window, not an inflexible law: document a genuine pacing reason for exceptions (including 27 or 32). Mobile wrapping is not constrained to this range.
+
+1. Keep approved paragraph markup/text intact. Choose `pageBreaks` only between whole paragraphs. Never create an underfilled final page merely to keep an old page count.
+2. Run `python3 scripts/page_density.py --prepare`. Serve the resulting `.qa/public` preview and open `/density-review.html`. The private review measures actual browser layout with loaded local fonts, counts every published page, flags short wrap endings and locked 1–3-word paragraphs, checks widths 320/375/390/430/768, and proposes evenly distributed breaks using the same target automatically. Proposals are starting points: review narrative connections and keep dependent phrases, lists, and reveals together where practical.
+3. Apply the chosen breaks in `content/installments.json`, rebuild the private review, and measure again. Do not publish the review HTML. It is generated only inside `.qa/public`, never the production source tree.
+4. Download the final measurement JSON. Enter explanations in each installment's `exceptions` object using **local page numbers** as keys for out-of-window pages. Resolve accidental short wraps; a genuine unavoidable wrap needs `wrapException`. Locked short paragraphs require an editorial list, not silent correction.
+5. Run `python3 scripts/page_density.py --record /absolute/path/to/page-density-measurements.json`. This validates the report against current manuscript hashes, typography/font signature, and page breaks, then records it in `content/page-density.json`. Run the normal `python3 scripts/verify.py`. Verification now fails if a published installment lacks current density evidence or an out-of-window page lacks its literary explanation. A new installment therefore inherits the same target and review gate automatically.
+6. Test live page controls, installment Previous/Next, Continue Reading, and desktop/mobile presentation. Publish through the existing workflow only after these checks.
+
+Balanced paragraph wrapping prevents accidental tiny end lines in supporting browsers. It changes no characters or paragraph boundaries. Other engines may wrap differently; paragraph-ending lines can naturally be shorter. Do not introduce nonbreaking text, shrink fonts, or alter memoir prose to force an exact count.
+
+Page numbers still derive continuously from finalized `pageBreaks`. Existing URLs and local `#page-N` hashes retain their meaning as installment reading positions. New saved positions include their pagination boundaries; when boundaries change, restoration selects the new page containing the start of the previously saved page, favoring a little rereading over skipping text. `legacyPageBreaks` records the pre-density boundaries for older saves that lacked this metadata; keep that initial fallback unchanged.

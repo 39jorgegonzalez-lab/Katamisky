@@ -16,3 +16,5 @@ Never put private identities, sensitive drafts, correspondence or evidence here.
 Use [STORY-PUBLISHING.md](STORY-PUBLISHING.md) for exact preview commands and editorial details.
 Never change a published URL. Visible page numbers are separate from permanent addresses.
 No newsletter service is connected. Three installments are published; preserve their approved prose and permanent URLs.
+
+**Page-density review:** Every new installment inherits the 28–31 rendered desktop-line target. The maintainer runs the private browser review with `python3 scripts/page_density.py --prepare`, adjusts only whole-paragraph page breaks, and records the measured result before verification. Literary exceptions are welcome when explained; mobile line counts vary naturally. You do not need to review code or alter prose to satisfy a numeric quota. See “Page density” in `STORY-PUBLISHING.md`.

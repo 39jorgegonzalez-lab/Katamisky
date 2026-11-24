@@ -4,7 +4,7 @@ import subprocess
 import sys
 from pathlib import Path
 root = Path(__file__).resolve().parents[1]
-commands = [('scripts/build.py', '--export'), ('tests/check_static.py',), ('tests/publisher.py',), ('tests/workflow.py',), ('tests/foundation.py',)]
+commands = [('scripts/build.py', '--export'), ('tests/check_static.py',), ('tests/publisher.py',), ('tests/workflow.py',), ('tests/foundation.py',), ('scripts/page_density.py',)]
 for command in commands:
     result = subprocess.run([sys.executable, *command], cwd=root)
     if result.returncode: sys.exit(result.returncode)

@@ -12,12 +12,17 @@
     "source": "i-have-been-angry.html",
     "pageBreaks": [
       18,
+      36,
+      56
+    ],
+    "document": false,
+    "objects": [],
+    "legacyPageBreaks": [
+      18,
       29,
       46,
       64
-    ],
-    "document": false,
-    "objects": []
+    ]
   },
   {
     "id": "before-there-was-me",
@@ -30,6 +35,15 @@
     "authorApproved": true,
     "source": "before-there-was-me.html",
     "pageBreaks": [
+      15,
+      41,
+      65,
+      91,
+      113
+    ],
+    "document": false,
+    "objects": [],
+    "legacyPageBreaks": [
       12,
       29,
       41,
@@ -37,9 +51,7 @@
       81,
       99,
       115
-    ],
-    "document": false,
-    "objects": []
+    ]
   },
   {
     "id": "what-they-left-behind",
@@ -52,14 +64,20 @@
     "authorApproved": true,
     "source": "what-they-left-behind.html",
     "pageBreaks": [
+      17,
+      38,
+      60,
+      83
+    ],
+    "document": false,
+    "objects": [],
+    "legacyPageBreaks": [
       14,
       21,
       41,
       56,
       76,
       94
-    ],
-    "document": false,
-    "objects": []
+    ]
   }
 ]

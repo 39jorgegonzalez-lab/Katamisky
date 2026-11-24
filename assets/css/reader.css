@@ -6,7 +6,7 @@
 .reader-header .chapter-title {font-family:var(--font-display);font-size:1.2rem;margin:.5rem 0 1.75rem}
 .reader-header .notice {margin-bottom:1.25rem}
 .story-body {font-family:var(--font-reading);font-size:clamp(1.08rem,1rem + .25vw,1.2rem);line-height:1.55;scroll-margin-top:1.25rem}
-.story-body p {margin:0 0 .75rem}
+.story-body p {margin:0 0 .75rem;text-wrap:balance;orphans:2;widows:2}
 .story-body h2 {font-size:1.6rem;margin:2.7rem 0 1.25rem;line-height:1.3}
 .story-body .opening {font-size:1.08em}
 .story-dialogue,.inner-thought,.exclamation,.story-emphasis {font-family:var(--font-reading)}
